@@ -3,7 +3,7 @@ table! {
         id -> Int4,
         title -> Varchar,
         code_url -> Varchar,
-        language -> Nullable<Varchar>,
+        language -> Varchar,
         author_id -> Int4,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,

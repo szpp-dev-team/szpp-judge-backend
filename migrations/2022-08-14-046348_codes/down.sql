@@ -1,1 +1,1 @@
-DROP TABLE codes
+DROP TABLE codes;

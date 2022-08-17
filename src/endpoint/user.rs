@@ -27,7 +27,7 @@ impl FUser {
 }
 
 #[post("/users")]
-pub async fn handle_post_code(
+pub async fn handle_post_user(
     db_pool: Data<PgPool>,
     data: Form<FUser>,
 ) -> Result<HttpResponse, actix_web::Error> {

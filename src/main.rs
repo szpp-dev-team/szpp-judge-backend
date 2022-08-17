@@ -1,6 +1,9 @@
 use actix_web::{web::Data, App, HttpServer};
 use dotenv::dotenv;
-use endpoint::code::handle_get_codes;
+use endpoint::{
+    code::{handle_get_codes, handle_post_code},
+    user::handle_post_user,
+};
 use repository::new_pg_pool;
 use std::env;
 
@@ -26,6 +29,8 @@ async fn main() -> Result<()> {
         App::new()
             .app_data(Data::new(db_pool.clone()))
             .service(handle_get_codes)
+            .service(handle_post_code)
+            .service(handle_post_user)
     })
     .bind(("0.0.0.0", PORT))?
     .run()

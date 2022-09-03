@@ -1,7 +1,3 @@
-use crate::{
-    model::NewUser,
-    repository::{user::UserRepository, PgPool},
-};
 use actix_web::{
     error::ErrorInternalServerError,
     post,
@@ -10,6 +6,8 @@ use actix_web::{
 };
 use chrono::Local;
 use serde::Deserialize;
+
+use crate::db::{model::user::NewUser, repository::user::UserRepository, PgPool};
 
 #[derive(Deserialize)]
 pub struct FUser {

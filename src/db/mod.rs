@@ -4,8 +4,8 @@ use diesel::{
     PgConnection,
 };
 
-pub mod code;
-pub mod user;
+pub mod model;
+pub mod repository;
 
 pub type PgPool = Pool<ConnectionManager<PgConnection>>;
 

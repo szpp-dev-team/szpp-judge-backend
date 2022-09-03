@@ -1,8 +1,9 @@
-use crate::model::{NewUser, User};
+use crate::db::{
+    model::user::{NewUser, User},
+    PgPool,
+};
 use anyhow::Result;
 use diesel::{insert_into, prelude::*};
-
-use super::PgPool;
 
 pub trait UserRepository {
     fn fetch_user_by_id(&self, id: i32) -> Result<User>;

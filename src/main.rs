@@ -1,19 +1,18 @@
-use actix_web::{web::Data, App, HttpServer};
-use dotenv::dotenv;
-use endpoint::{
-    code::{handle_get_codes, handle_post_code},
-    user::handle_post_user,
-};
-use repository::new_pg_pool;
-use std::env;
-
 #[macro_use]
 extern crate diesel;
 
-mod endpoint;
-mod model;
-mod repository;
+use actix_web::{web::Data, App, HttpServer};
+use db::new_pg_pool;
+use dotenv::dotenv;
+use server::endpoint::{
+    code::{handle_get_codes, handle_post_code},
+    user::handle_post_user,
+};
+use std::env;
+
+mod db;
 mod schema;
+mod server;
 
 use anyhow::Result;
 

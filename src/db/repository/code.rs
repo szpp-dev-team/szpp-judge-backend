@@ -1,5 +1,7 @@
-use super::PgPool;
-use crate::model::{Code, NewCode};
+use crate::db::{
+    model::code::{Code, NewCode},
+    PgPool,
+};
 use anyhow::Result;
 use diesel::{insert_into, prelude::*};
 

@@ -1,7 +1,4 @@
-use crate::{
-    model::NewCode,
-    repository::{code::CodeRepository, PgPool},
-};
+use crate::db::{model::code::NewCode, repository::code::CodeRepository, PgPool};
 use actix_web::{
     error::ErrorInternalServerError,
     get, post,

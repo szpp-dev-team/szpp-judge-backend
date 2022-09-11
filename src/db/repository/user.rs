@@ -13,17 +13,17 @@ pub trait UserRepository {
 impl UserRepository for PgPool {
     fn fetch_user_by_id(&self, target_id: i32) -> Result<User> {
         use crate::schema::users::dsl::*;
-        let conn = self.get()?;
-        let res = users.filter(id.eq(target_id)).first(&conn)?;
+        let mut conn = self.get()?;
+        let res = users.filter(id.eq(target_id)).first(&mut conn)?;
         Ok(res)
     }
 
     fn insert_user(&self, new_user: &NewUser) -> Result<User> {
         use crate::schema::users;
-        let conn = self.get()?;
+        let mut conn = self.get()?;
         let res = insert_into(users::table)
             .values(new_user)
-            .get_result(&conn)?;
+            .get_result(&mut conn)?;
         Ok(res)
     }
 }

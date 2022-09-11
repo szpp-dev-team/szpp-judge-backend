@@ -13,17 +13,17 @@ pub trait CodeRepository {
 impl CodeRepository for PgPool {
     fn fetch_all_codes(&self) -> Result<Vec<Code>> {
         use crate::schema::codes::dsl::*;
-        let conn = self.get()?;
-        let res = codes.load::<Code>(&conn)?;
+        let mut conn = self.get()?;
+        let res = codes.load::<Code>(&mut conn)?;
         Ok(res)
     }
 
     fn insert_code(&self, new_code: &NewCode) -> Result<Code> {
         use crate::schema::codes;
-        let conn = self.get()?;
+        let mut conn = self.get()?;
         let res = insert_into(codes::table)
             .values(new_code)
-            .get_result(&conn)?;
+            .get_result(&mut conn)?;
         Ok(res)
     }
 }

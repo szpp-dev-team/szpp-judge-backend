@@ -14,7 +14,7 @@ pub struct Code {
 }
 
 #[derive(Insertable)]
-#[table_name = "codes"]
+#[diesel(table_name = codes)]
 pub struct NewCode {
     pub title: String,
     pub code_url: String,

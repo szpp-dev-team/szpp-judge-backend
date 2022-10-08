@@ -1,4 +1,4 @@
-CREATE TABLE constests (
+CREATE TABLE contests (
     id SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL,
     slug VARCHAR NOT NULL,
@@ -9,5 +9,5 @@ CREATE TABLE constests (
     penalty int NOT NULL,
     
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP,
+    updated_at TIMESTAMP
 );

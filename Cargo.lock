@@ -1109,7 +1109,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "szpp-code-viewer-backend"
+name = "szpp-judge-backend"
 version = "0.1.0"
 dependencies = [
  "actix-web",

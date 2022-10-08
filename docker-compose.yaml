@@ -11,6 +11,6 @@ services:
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=szpp-code-viewer
+      - POSTGRES_DB=szpp-judge
     ports:
       - 5432:5432

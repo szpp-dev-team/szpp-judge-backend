@@ -1,4 +1,4 @@
-FROM rust:1.16 AS builder
+FROM rust:1.64 AS builder
 
 WORKDIR /work
 RUN cargo new --bin dummy

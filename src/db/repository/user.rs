@@ -7,7 +7,7 @@ use diesel::{insert_into, prelude::*};
 
 pub trait UserRepository {
     fn fetch_user_by_id(&self, id: i32) -> Result<User>;
-    fn fetch_by_session(&self, session: &str) -> Result<User>;
+    fn fetch_user_by_session(&self, session: &str) -> Result<User>;
     fn insert_user(&self, new_user: &NewUser) -> Result<User>;
 }
 
@@ -19,7 +19,7 @@ impl UserRepository for PgPool {
         Ok(res)
     }
 
-    fn fetch_by_session(&self, session_str: &str) -> Result<User> {
+    fn fetch_user_by_session(&self, session_str: &str) -> Result<User> {
         use crate::schema::users::dsl::*;
         let mut conn = self.get()?;
         let res = users

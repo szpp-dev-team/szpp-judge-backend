@@ -5,7 +5,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Queryable, Debug, Serialize, Deserialize)]
 pub struct User {
     pub id: i32,
-    pub name: String,
+    pub username: String,
+    pub encrypted_password: String,
+    pub display_name: Option<String>,
+    pub session_token: Option<String>,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
 }
@@ -13,7 +16,9 @@ pub struct User {
 #[derive(Insertable, Debug)]
 #[diesel(table_name = users)]
 pub struct NewUser {
-    pub name: String,
+    pub username: String,
+    pub encrypted_password: String,
+    pub display_name: Option<String>,
+    pub session_token: Option<String>,
     pub created_at: NaiveDateTime,
-    pub updated_at: Option<NaiveDateTime>,
 }

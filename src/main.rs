@@ -1,20 +1,17 @@
 #[macro_use]
 extern crate diesel;
 
+use crate::server::endpoint::{health_check::handle_check_health, user::handle_get_user};
 use actix_web::{web::Data, App, HttpServer};
+use anyhow::Result;
 use db::new_pg_pool;
 use dotenv::dotenv;
-use server::endpoint::{
-    code::{handle_get_codes, handle_post_code},
-    user::handle_post_user,
-};
-use std::env;
+use server::endpoint::user::handle_register_user;
+use std::{env, sync::Arc};
 
 mod db;
 mod schema;
 mod server;
-
-use anyhow::Result;
 
 const PORT: u16 = 8080;
 
@@ -22,14 +19,14 @@ const PORT: u16 = 8080;
 async fn main() -> Result<()> {
     dotenv().ok();
 
-    let db_pool = new_pg_pool(env::var("DATABASE_URL")?.as_str())?;
+    let db_pool = Arc::new(new_pg_pool(env::var("DATABASE_URL")?.as_str())?);
 
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(db_pool.clone()))
-            .service(handle_get_codes)
-            .service(handle_post_code)
-            .service(handle_post_user)
+            .service(handle_register_user)
+            .service(handle_get_user)
+            .service(handle_check_health)
     })
     .bind(("0.0.0.0", PORT))?
     .run()

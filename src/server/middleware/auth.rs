@@ -1,54 +1,49 @@
-use std::{rc::Rc, sync::Arc};
+use actix_web::{error::ErrorUnauthorized, http::header, Error, FromRequest};
+use futures::future::{err, ok, Ready};
+use jsonwebtoken::{decode, DecodingKey, Validation};
+use once_cell::sync::Lazy;
+use serde::{Deserialize, Serialize};
 
-use actix_web::{
-    body::MessageBody,
-    dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
-    Error,
-};
-use futures_util::future::{LocalBoxFuture, Ready};
-
-use crate::db::PgPool;
-
-pub struct AuthService {
-    db_pool: Arc<PgPool>,
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Claims {
+    exp: usize,
+    id: i32,
+    role: String,
 }
 
-impl AuthService {
-    pub fn new(db_pool: Arc<PgPool>) -> Self {
-        Self { db_pool }
-    }
-}
+static SECRET: Lazy<String> = Lazy::new(|| "SECRET".to_string());
 
-impl<S, B> Transform<S, ServiceRequest> for AuthService
-where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    B: MessageBody,
-{
-    type Response = ServiceResponse<B>;
+pub struct AuthService;
+
+impl FromRequest for AuthService {
     type Error = Error;
-    type InitError = ();
-    type Transform = AuthMiddleware<S>;
-    type Future = Ready<Result<Self::Transform, Self::InitError>>;
-    fn new_transform(&self, service: S) -> Self::Future {
-        read
+    type Future = Ready<Result<AuthService, Error>>;
+
+    fn from_request(
+        req: &actix_web::HttpRequest,
+        payload: &mut actix_web::dev::Payload,
+    ) -> Self::Future {
+        let auth = req.headers().get(header::AUTHORIZATION);
+        match auth {
+            Some(auth) => {
+                let token = auth
+                    .to_str()
+                    .unwrap()
+                    .split("Bearer")
+                    .collect::<Vec<_>>()
+                    .get(1)
+                    .unwrap()
+                    .trim();
+                match decode::<Claims>(
+                    token,
+                    &DecodingKey::from_secret(SECRET.as_bytes()),
+                    &Validation::default(),
+                ) {
+                    Ok(_) => ok(AuthService),
+                    Err(e) => err(ErrorUnauthorized("invalid jwt token")),
+                }
+            }
+            None => err(ErrorUnauthorized("blocked")),
+        }
     }
-}
-
-pub struct AuthMiddleware<S> {
-    db_pool: Arc<PgPool>,
-    service: S,
-}
-
-impl<S, B> Service<ServiceRequest> for AuthMiddleware<S>
-where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    B: MessageBody,
-{
-    type Response = ServiceResponse<B>;
-    type Error = Error;
-    type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
-
-    forward_ready!(service);
-
-    fn call(&self, req: ServiceRequest) -> Self::Future {}
 }

@@ -13,15 +13,13 @@ pub struct Claims {
 
 static SECRET: Lazy<String> = Lazy::new(|| "SECRET".to_string());
 
-pub struct AuthService;
-
-impl FromRequest for AuthService {
+impl FromRequest for Claims {
     type Error = Error;
-    type Future = Ready<Result<AuthService, Error>>;
+    type Future = Ready<Result<Claims, Error>>;
 
     fn from_request(
         req: &actix_web::HttpRequest,
-        payload: &mut actix_web::dev::Payload,
+        _payload: &mut actix_web::dev::Payload,
     ) -> Self::Future {
         let auth = req.headers().get(header::AUTHORIZATION);
         match auth {
@@ -39,8 +37,8 @@ impl FromRequest for AuthService {
                     &DecodingKey::from_secret(SECRET.as_bytes()),
                     &Validation::default(),
                 ) {
-                    Ok(_) => ok(AuthService),
-                    Err(e) => err(ErrorUnauthorized("invalid jwt token")),
+                    Ok(c) => ok(c.claims),
+                    Err(_e) => err(ErrorUnauthorized("invalid jwt token")),
                 }
             }
             None => err(ErrorUnauthorized("blocked")),

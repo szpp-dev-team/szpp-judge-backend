@@ -17,7 +17,7 @@ diesel::table! {
         name -> Varchar,
         slug -> Varchar,
         category -> Varchar,
-        constraints -> Varchar,
+        description -> Varchar,
         start_at -> Timestamp,
         end_at -> Timestamp,
         penalty -> Int4,

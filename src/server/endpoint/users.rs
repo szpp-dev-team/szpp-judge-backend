@@ -1,4 +1,5 @@
 use crate::db::{model::user::NewUser, repository::user::UserRepository, PgPool};
+use crate::util::hash_password;
 use actix_web::{
     error::{ErrorInternalServerError, ErrorNotFound},
     get, post,
@@ -8,7 +9,6 @@ use actix_web::{
 use chrono::Local;
 use diesel::result::Error as DieselError;
 use serde::Deserialize;
-use szpp_judge_backend::hash_password;
 
 #[derive(Deserialize)]
 pub struct FUser {

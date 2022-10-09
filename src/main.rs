@@ -12,9 +12,9 @@ use server::endpoint::users::handle_register_user;
 use std::{env, sync::Arc};
 
 mod db;
-mod lib;
 mod schema;
 mod server;
+mod util;
 
 const PORT: u16 = 8080;
 const NUM_CPUS: usize = 4;

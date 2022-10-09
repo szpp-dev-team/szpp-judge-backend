@@ -8,7 +8,7 @@ pub fn hash_password(password: &str) -> String {
 
 #[cfg(test)]
 mod test {
-    use crate::hash_password;
+    use crate::util::hash_password;
 
     #[test]
     fn test_encrypt_password() {

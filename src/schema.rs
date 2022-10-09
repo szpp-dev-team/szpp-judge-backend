@@ -44,6 +44,7 @@ diesel::table! {
         id -> Int4,
         name -> Varchar,
         statement -> Varchar,
+        part_score -> Nullable<Varchar>,
         constraints -> Varchar,
         input -> Varchar,
         output -> Varchar,

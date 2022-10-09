@@ -69,12 +69,19 @@ diesel::table! {
 }
 
 diesel::table! {
+    testcase_testcase_sets (id) {
+        id -> Int4,
+        testcase_id -> Int4,
+        testcase_set_id -> Int4,
+    }
+}
+
+diesel::table! {
     testcases (id) {
         id -> Int4,
         name -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
-        testcase_set_id -> Int4,
     }
 }
 
@@ -95,7 +102,8 @@ diesel::joinable!(contest_tasks -> tasks (task_id));
 diesel::joinable!(submits -> tasks (task_id));
 diesel::joinable!(submits -> users (user_id));
 diesel::joinable!(testcase_sets -> tasks (task_id));
-diesel::joinable!(testcases -> testcase_sets (testcase_set_id));
+diesel::joinable!(testcase_testcase_sets -> testcase_sets (testcase_set_id));
+diesel::joinable!(testcase_testcase_sets -> testcases (testcase_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     contest_tasks,
@@ -103,6 +111,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     submits,
     tasks,
     testcase_sets,
+    testcase_testcase_sets,
     testcases,
     users,
 );

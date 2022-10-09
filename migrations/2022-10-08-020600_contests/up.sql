@@ -1,7 +1,7 @@
 CREATE TABLE contests (
     id SERIAL PRIMARY KEY,
-    name VARCHAR NOT NULL,
-    slug VARCHAR NOT NULL,
+    name VARCHAR NOT NULL UNIQUE,
+    slug VARCHAR NOT NULL UNIQUE,
     category VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
     start_at TIMESTAMP NOT NULL,

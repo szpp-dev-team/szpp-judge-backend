@@ -7,7 +7,6 @@ CREATE TABLE submits (
     updated_at TIMESTAMP,
 
     user_id SERIAL NOT NULL,
-    
     task_id SERIAL NOT NULL,
     FOREIGN KEY (user_id)
         REFERENCES users (id),

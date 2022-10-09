@@ -1,12 +1,12 @@
 #[macro_use]
 extern crate diesel;
 
-use crate::server::endpoint::{health_check::handle_check_health, user::handle_get_user};
+use crate::server::endpoint::{health_check::handle_check_health, users::handle_get_user};
 use actix_web::{web::Data, App, HttpServer};
 use anyhow::Result;
 use db::new_pg_pool;
 use dotenv::dotenv;
-use server::endpoint::user::handle_register_user;
+use server::endpoint::users::handle_register_user;
 use std::{env, sync::Arc};
 
 mod db;

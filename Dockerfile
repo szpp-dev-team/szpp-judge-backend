@@ -4,8 +4,8 @@ WORKDIR /work
 RUN cargo new --bin dummy
 
 COPY Cargo.toml Cargo.lock ./
-RUN cargo build --release
-RUN rm src/*.rs
+RUN cargo build --release \
+    && rm src/*.rs
 
 COPY ./src .
 RUN cargo build --release

@@ -35,7 +35,8 @@ pub async fn handle_register_user(
     data: Form<FUser>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_user = data.to_model();
-    let user = db_pool
+    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
+    let user = conn
         .insert_user(&new_user)
         .map_err(ErrorInternalServerError)?;
 
@@ -47,7 +48,8 @@ pub async fn handle_get_user(
     path: Path<i32>,
     db_pool: Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let user = db_pool.fetch_user_by_id(*path).map_err(|e| {
+    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
+    let user = conn.fetch_user_by_id(*path).map_err(|e| {
         if let DieselError::NotFound = e.downcast_ref::<DieselError>().unwrap() {
             ErrorNotFound(e)
         } else {

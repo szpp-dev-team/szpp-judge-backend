@@ -42,7 +42,8 @@ pub async fn handle_register_contest(
     data: Form<FContest>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_contest = data.to_model();
-    let contest = db_pool
+    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
+    let contest = conn
         .insert_contest(&new_contest)
         .map_err(ErrorInternalServerError)?;
     Ok(HttpResponse::Ok().json(&contest))
@@ -53,7 +54,8 @@ pub async fn handle_get_contest(
     path: Path<i32>,
     db_pool: Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let contest = db_pool.fetch_contest_by_id(*path).map_err(|e| {
+    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
+    let contest = conn.fetch_contest_by_id(*path).map_err(|e| {
         if let DieselError::NotFound = e.downcast_ref::<DieselError>().unwrap() {
             ErrorNotFound(e)
         } else {

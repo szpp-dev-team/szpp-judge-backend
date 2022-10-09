@@ -1,39 +1,34 @@
 use crate::db::{
     model::user::{NewUser, User},
-    PgPool,
+    PgPooledConn,
 };
 use anyhow::Result;
 use diesel::{insert_into, prelude::*};
 
 pub trait UserRepository {
-    fn fetch_user_by_id(&self, id: i32) -> Result<User>;
-    fn fetch_user_by_session(&self, session: &str) -> Result<User>;
-    fn insert_user(&self, new_user: &NewUser) -> Result<User>;
+    fn fetch_user_by_id(&mut self, id: i32) -> Result<User>;
+    fn fetch_user_by_session(&mut self, session: &str) -> Result<User>;
+    fn insert_user(&mut self, new_user: &NewUser) -> Result<User>;
 }
 
-impl UserRepository for PgPool {
-    fn fetch_user_by_id(&self, target_id: i32) -> Result<User> {
+impl UserRepository for PgPooledConn {
+    fn fetch_user_by_id(&mut self, target_id: i32) -> Result<User> {
         use crate::schema::users::dsl::*;
-        let mut conn = self.get()?;
-        let res = users.filter(id.eq(target_id)).first(&mut conn)?;
+        let res = users.filter(id.eq(target_id)).first(self)?;
         Ok(res)
     }
 
-    fn fetch_user_by_session(&self, session_str: &str) -> Result<User> {
+    fn fetch_user_by_session(&mut self, session_str: &str) -> Result<User> {
         use crate::schema::users::dsl::*;
-        let mut conn = self.get()?;
-        let res = users
-            .filter(session_token.eq(session_str))
-            .first(&mut conn)?;
+        let res = users.filter(session_token.eq(session_str)).first(self)?;
         Ok(res)
     }
 
-    fn insert_user(&self, new_user: &NewUser) -> Result<User> {
+    fn insert_user(&mut self, new_user: &NewUser) -> Result<User> {
         use crate::schema::users;
-        let mut conn = self.get()?;
         let res = insert_into(users::table)
             .values(new_user)
-            .get_result(&mut conn)?;
+            .get_result(self)?;
         Ok(res)
     }
 }

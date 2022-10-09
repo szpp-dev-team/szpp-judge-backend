@@ -1,6 +1,6 @@
 use anyhow::Result;
 use diesel::{
-    r2d2::{ConnectionManager, Pool},
+    r2d2::{ConnectionManager, Pool, PooledConnection},
     PgConnection,
 };
 
@@ -8,6 +8,7 @@ pub mod model;
 pub mod repository;
 
 pub type PgPool = Pool<ConnectionManager<PgConnection>>;
+pub type PgPooledConn = PooledConnection<ConnectionManager<PgConnection>>;
 
 pub fn new_pg_pool(db_url: &str) -> Result<PgPool> {
     let manager = ConnectionManager::<PgConnection>::new(db_url);

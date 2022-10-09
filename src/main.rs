@@ -12,6 +12,7 @@ use server::endpoint::users::handle_register_user;
 use std::{env, sync::Arc};
 
 mod db;
+mod lib;
 mod schema;
 mod server;
 

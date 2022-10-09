@@ -8,7 +8,7 @@ use actix_web::{
 use chrono::Local;
 use diesel::result::Error as DieselError;
 use serde::Deserialize;
-use sha2::{Digest, Sha256};
+use szpp_judge_backend::hash_password;
 
 #[derive(Deserialize)]
 pub struct FUser {
@@ -19,13 +19,9 @@ pub struct FUser {
 
 impl FUser {
     fn to_model(&self) -> NewUser {
-        let mut hasher = Sha256::new();
-        hasher.update(self.password.as_bytes());
-        let encrypted_password = String::from_utf8(hasher.finalize().to_vec()).unwrap();
-
         NewUser {
             username: self.username.clone(),
-            encrypted_password,
+            encrypted_password: hash_password(&self.password),
             display_name: self.display_name.clone(),
             session_token: None,
             created_at: Local::now().naive_local(),

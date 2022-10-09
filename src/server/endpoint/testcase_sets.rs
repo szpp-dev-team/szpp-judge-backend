@@ -32,7 +32,7 @@ impl FTestcaseSet {
 }
 
 #[post("/tasks/{task_id}/testcase_sets")]
-pub async fn handle_register_testcases(
+pub async fn handle_register_testcase_sets(
     db_pool: Data<PgPool>,
     data: Form<FTestcaseSet>,
     task_id: Path<i32>,

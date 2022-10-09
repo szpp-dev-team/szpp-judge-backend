@@ -4,7 +4,9 @@ extern crate diesel;
 use crate::{
     gcs::Client,
     server::endpoint::{
-        contests::handle_get_contest, health_check::handle_check_health, users::handle_get_user,
+        contests::handle_get_contest, health_check::handle_check_health,
+        tasks::handle_register_task, testcase_sets::handle_register_testcase_sets,
+        testcases::handle_register_testcases, users::handle_get_user,
     },
 };
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
@@ -42,7 +44,9 @@ async fn main() -> Result<()> {
             .service(handle_get_user)
             .service(handle_check_health)
             .service(handle_get_contest)
-            .service(handle_register_user)
+            .service(handle_register_testcases)
+            .service(handle_register_testcase_sets)
+            .service(handle_register_task)
     })
     .bind(("0.0.0.0", PORT))?
     .workers(NUM_CPUS)

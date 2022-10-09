@@ -82,6 +82,7 @@ diesel::table! {
         name -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
+        task_id -> Int4,
     }
 }
 
@@ -104,6 +105,7 @@ diesel::joinable!(submits -> users (user_id));
 diesel::joinable!(testcase_sets -> tasks (task_id));
 diesel::joinable!(testcase_testcase_sets -> testcase_sets (testcase_set_id));
 diesel::joinable!(testcase_testcase_sets -> testcases (testcase_id));
+diesel::joinable!(testcases -> tasks (task_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     contest_tasks,

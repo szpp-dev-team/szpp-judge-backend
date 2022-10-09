@@ -1,1 +1,1 @@
-DROP TABLE testcases;
+DROP TABLE testcase_testcase_sets;

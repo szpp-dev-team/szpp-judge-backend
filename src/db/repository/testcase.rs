@@ -7,12 +7,21 @@ use chrono::Local;
 use diesel::{insert_into, prelude::*, update};
 
 pub trait TestcaseRepository {
+    fn fetch_testcase(&mut self, testcase_id: i32) -> Result<Testcase>;
     fn insert_testcase(&mut self, new_testcase: &NewTestcase) -> Result<Testcase>;
     fn insert_testcases(&mut self, new_testcases: &[NewTestcase]) -> Result<Vec<Testcase>>;
     fn delete_testcases(&mut self, task_id: i32, testcase_ids: &[i32]) -> Result<Vec<Testcase>>;
 }
 
 impl TestcaseRepository for PgPooledConn {
+    fn fetch_testcase(&mut self, testcase_id: i32) -> Result<Testcase> {
+        use crate::schema::testcases;
+        let res = testcases::table
+            .filter(testcases::id.eq(testcase_id))
+            .get_result(self)?;
+        Ok(res)
+    }
+
     fn insert_testcase(&mut self, new_testcase: &NewTestcase) -> Result<Testcase> {
         use crate::schema::testcases;
         let res = insert_into(testcases::table)

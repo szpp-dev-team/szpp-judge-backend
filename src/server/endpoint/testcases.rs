@@ -1,17 +1,45 @@
 use crate::{
     db::{repository::testcase::TestcaseRepository, PgPool},
     gcs::Client,
-    server::model::testcases::TestcasePayload,
+    server::model::testcases::{TestcaseBody, TestcasePayload},
 };
 use actix_web::{
     delete,
     error::ErrorInternalServerError,
-    post,
+    get, post,
     web::{Data, Json, Path},
     HttpResponse,
 };
 use diesel::Connection;
 use tokio::runtime::Runtime;
+
+#[get("/tasks/{task_id}/testcases/{testcase_id}")]
+pub async fn handle_get_testcase(
+    db_pool: Data<PgPool>,
+    gcs_client: Data<Client>,
+    task_id: Path<i32>,
+    testcase_id: Path<i32>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
+
+    let rt = Runtime::new().unwrap();
+    let testcase_body = conn
+        .transaction(|conn| {
+            let testcase = conn.fetch_testcase(*testcase_id)?;
+            let (input, output) = rt.block_on(async {
+                let (input, output) = gcs_client
+                    .download_testcase(*task_id, &testcase.name)
+                    .await?;
+                Ok::<_, anyhow::Error>((input, output))
+            })?;
+            let testcase_body = TestcaseBody::from_model(&testcase, input, output);
+
+            Ok::<_, anyhow::Error>(testcase_body)
+        })
+        .map_err(ErrorInternalServerError)?;
+
+    Ok(HttpResponse::Ok().json(&testcase_body))
+}
 
 #[post("/tasks/{task_id}/testcases")]
 pub async fn handle_register_testcase(

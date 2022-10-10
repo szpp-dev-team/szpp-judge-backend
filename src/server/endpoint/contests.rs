@@ -1,12 +1,12 @@
 use crate::{
     db::{repository::contest::ContestRepository, PgPool},
-    server::model::contests::FContest,
+    server::model::contests::Contest,
 };
 use actix_web::{
     error::{ErrorInternalServerError, ErrorNotFound},
     get, post,
     web::Path,
-    web::{Data, Form},
+    web::{Data, Json},
     HttpResponse,
 };
 use diesel::result::Error as DieselError;
@@ -14,7 +14,7 @@ use diesel::result::Error as DieselError;
 #[post("/contests")]
 pub async fn handle_register_contest(
     db_pool: Data<PgPool>,
-    data: Form<FContest>,
+    data: Json<Contest>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_contest = data.to_model();
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;

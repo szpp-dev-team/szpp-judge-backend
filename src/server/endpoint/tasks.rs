@@ -1,11 +1,11 @@
 use crate::{
     db::{repository::task::TaskRepository, PgPool},
-    server::{middleware::auth::Claims, model::tasks::FTask},
+    server::{middleware::auth::Claims, model::tasks::Task},
 };
 use actix_web::{
     error::ErrorInternalServerError,
     post,
-    web::{Data, Form},
+    web::{Data, Json},
     HttpResponse,
 };
 use diesel::Connection;
@@ -14,7 +14,7 @@ use diesel::Connection;
 pub async fn handle_register_task(
     user: Claims,
     db_pool: Data<PgPool>,
-    data: Form<FTask>,
+    data: Json<Task>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_task = data.to_model(user.id);
     let mut conn = db_pool

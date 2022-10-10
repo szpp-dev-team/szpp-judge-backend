@@ -1,9 +1,10 @@
 use crate::db::{repository::user::UserRepository, PgPool};
-use crate::server::model::users::FUser;
+use crate::server::model::users::User;
+use actix_web::web::Json;
 use actix_web::{
     error::{ErrorInternalServerError, ErrorNotFound},
     get, post,
-    web::{Data, Form, Path},
+    web::{Data, Path},
     HttpResponse,
 };
 use diesel::result::Error as DieselError;
@@ -11,7 +12,7 @@ use diesel::result::Error as DieselError;
 #[post("/users")]
 pub async fn handle_register_user(
     db_pool: Data<PgPool>,
-    data: Form<FUser>,
+    data: Json<User>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_user = data.to_model();
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;

@@ -1,12 +1,12 @@
 use crate::{
     db::{repository::testcase::TestcaseRepository, PgPool},
     gcs::Client,
-    server::model::testcases::FTestcase,
+    server::model::testcases::Testcase,
 };
 use actix_web::{
     error::ErrorInternalServerError,
     post,
-    web::{Data, Form, Path},
+    web::{Data, Json, Path},
     HttpResponse,
 };
 use diesel::Connection;
@@ -16,7 +16,7 @@ use tokio::runtime::Runtime;
 pub async fn handle_register_testcases(
     db_pool: Data<PgPool>,
     gcs_client: Data<Client>,
-    data: Form<FTestcase>,
+    data: Json<Testcase>,
     task_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_testcase = data.to_model(*task_id);

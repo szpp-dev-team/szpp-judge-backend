@@ -1,11 +1,11 @@
 use crate::{
     db::{repository::testcase_set::TestcaseSetRepository, PgPool},
-    server::model::testcase_sets::FTestcaseSet,
+    server::model::testcase_sets::TestcaseSet,
 };
 use actix_web::{
     error::ErrorInternalServerError,
     post,
-    web::{Data, Form, Path},
+    web::{Data, Json, Path},
     HttpResponse,
 };
 use diesel::Connection;
@@ -13,7 +13,7 @@ use diesel::Connection;
 #[post("/tasks/{task_id}/testcase_sets")]
 pub async fn handle_register_testcase_sets(
     db_pool: Data<PgPool>,
-    data: Form<FTestcaseSet>,
+    data: Json<TestcaseSet>,
     task_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_testcase_set = data.to_model(*task_id);

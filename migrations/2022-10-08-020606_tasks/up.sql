@@ -12,6 +12,9 @@ CREATE TABLE tasks (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,
     contest_id SERIAL,
+    author_id SERIAL,
     FOREIGN KEY (contest_id)
-        REFERENCES contests (id)
+        REFERENCES contests (id),
+    FOREIGN KEY (author_id)
+        REFERENCES users (id)
 );

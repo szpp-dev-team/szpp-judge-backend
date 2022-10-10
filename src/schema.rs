@@ -43,6 +43,7 @@ diesel::table! {
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         contest_id -> Int4,
+        author_id -> Int4,
     }
 }
 
@@ -91,6 +92,7 @@ diesel::table! {
 diesel::joinable!(submits -> tasks (task_id));
 diesel::joinable!(submits -> users (user_id));
 diesel::joinable!(tasks -> contests (contest_id));
+diesel::joinable!(tasks -> users (author_id));
 diesel::joinable!(testcase_sets -> tasks (task_id));
 diesel::joinable!(testcase_testcase_sets -> testcase_sets (testcase_set_id));
 diesel::joinable!(testcase_testcase_sets -> testcases (testcase_id));

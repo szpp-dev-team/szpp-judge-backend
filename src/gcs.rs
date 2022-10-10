@@ -39,27 +39,30 @@ impl Client {
         Ok(obj)
     }
 
-    pub async fn download_testcase(&self, id: i32) -> Result<Vec<u8>> {
-        let path = format!("{}/{}", TESTCASES_FOLDER_NAME, id);
-        let bytes = self
-            .gcs_client
-            .object()
-            .download(BUCKET_NAME, &path)
-            .await?;
-        Ok(bytes)
+    pub async fn download_testcase(&self, task_id: i32, name: &str) -> Result<(Vec<u8>, Vec<u8>)> {
+        let (in_path, out_path) = (
+            format!("{}/{}/in/{}", TESTCASES_FOLDER_NAME, task_id, name),
+            format!("{}/{}/out/{}", TESTCASES_FOLDER_NAME, task_id, name),
+        );
+        let obj_client = self.gcs_client.object();
+        let (bytes_in, bytes_out) = tokio::join!(
+            obj_client.download(BUCKET_NAME, &in_path),
+            obj_client.download(BUCKET_NAME, &out_path),
+        );
+        Ok((bytes_in?, bytes_out?))
     }
 
     pub async fn upload_testcase(
         &self,
-        testcase_id: i32,
+        task_id: i32,
         name: &str,
         input: &str,
         output: &str,
     ) -> Result<(Object, Object)> {
         let obj_client = self.gcs_client.object();
         let (in_path, out_path) = (
-            format!("{}/{}/in/{}", TESTCASES_FOLDER_NAME, testcase_id, name),
-            format!("{}/{}/out/{}", TESTCASES_FOLDER_NAME, testcase_id, name),
+            format!("{}/{}/in/{}", TESTCASES_FOLDER_NAME, task_id, name),
+            format!("{}/{}/out/{}", TESTCASES_FOLDER_NAME, task_id, name),
         );
         let (obj_in, obj_out) = tokio::join!(
             obj_client.create(
@@ -76,5 +79,24 @@ impl Client {
             )
         );
         Ok((obj_in?, obj_out?))
+    }
+
+    pub async fn remove_testcase(&self, task_id: i32, name: &str) -> Result<()> {
+        let obj_client = self.gcs_client.object();
+
+        let (in_path, out_path) = (
+            format!("{}/{}/in/{}", TESTCASES_FOLDER_NAME, task_id, name),
+            format!("{}/{}/out/{}", TESTCASES_FOLDER_NAME, task_id, name),
+        );
+        let (obj_in, obj_out) = tokio::join!(
+            obj_client.delete(BUCKET_NAME, in_path.as_str()),
+            obj_client.delete(BUCKET_NAME, out_path.as_str()),
+        );
+
+        // TODO: もっとスマートな書き方がありそう・・。
+        obj_in?;
+        obj_out?;
+
+        Ok(())
     }
 }

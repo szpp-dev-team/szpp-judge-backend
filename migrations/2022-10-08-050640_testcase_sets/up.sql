@@ -1,5 +1,5 @@
 CREATE TABLE testcase_sets (
-    id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY NOT NULL,
     name VARCHAR NOT NULL,
     is_sample BOOLEAN NOT NULL,
     score INT NOT NULL,

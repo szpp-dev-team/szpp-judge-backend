@@ -3,7 +3,7 @@ CREATE TYPE TASKTYPE AS ENUM (
 );
 
 CREATE TABLE tasks (
-    id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY NOT NULL,
     name VARCHAR NOT NULL,
     statement VARCHAR NOT NULL,
     part_score VARCHAR,

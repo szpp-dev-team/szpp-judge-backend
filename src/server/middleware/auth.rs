@@ -6,9 +6,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
-    exp: usize,
-    id: i32,
-    role: String,
+    pub exp: usize,
+    pub id: i32,
+    pub role: String,
 }
 
 static SECRET: Lazy<String> = Lazy::new(|| "SECRET".to_string());

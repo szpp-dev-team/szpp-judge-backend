@@ -25,6 +25,7 @@ diesel::table! {
         updated_at -> Nullable<Timestamp>,
         user_id -> Int4,
         task_id -> Int4,
+        contest_id -> Int4,
     }
 }
 
@@ -89,6 +90,7 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(submits -> contests (contest_id));
 diesel::joinable!(submits -> tasks (task_id));
 diesel::joinable!(submits -> users (user_id));
 diesel::joinable!(tasks -> contests (contest_id));

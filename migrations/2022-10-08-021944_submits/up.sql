@@ -8,8 +8,11 @@ CREATE TABLE submits (
 
     user_id SERIAL NOT NULL,
     task_id SERIAL NOT NULL,
+    contest_id SERIAL NOT NULL,
     FOREIGN KEY (user_id)
         REFERENCES users (id),
     FOREIGN KEY (task_id)
-        REFERENCES tasks (id)
+        REFERENCES tasks (id),
+    FOREIGN KEY (contest_id)
+        REFERENCES contests (id)
 );

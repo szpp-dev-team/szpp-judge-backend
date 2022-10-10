@@ -1,3 +1,7 @@
+CREATE TYPE TASKTYPE AS ENUM (
+    'contest', 'normal'
+);
+
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL,
@@ -9,6 +13,9 @@ CREATE TABLE tasks (
     score INT NOT NULL,
     time_limit INT NOT NULL,
     memory_limit INT NOT NULL,
+    task_type VARCHAR NOT NULL,
+    is_draft BOOLEAN NOT NULL,
+    is_public BOOLEAN NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,
     contest_id INT,

@@ -13,6 +13,9 @@ pub struct Task {
     pub score: i32,
     pub time_limit: i32,
     pub memory_limit: i32,
+    pub task_type: String,
+    pub is_draft: bool,
+    pub is_public: bool,
 }
 
 impl Task {
@@ -30,6 +33,9 @@ impl Task {
             created_at: chrono::Local::now().naive_local(),
             author_id,
             contest_id: None,
+            task_type: self.task_type.clone(),
+            is_draft: self.is_draft,
+            is_public: self.is_public,
         }
     }
 }

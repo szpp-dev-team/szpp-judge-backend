@@ -1,5 +1,6 @@
-use crate::db::{
-    model::testcase_sets::NewTestcaseSet, repository::testcase_set::TestcaseSetRepository, PgPool,
+use crate::{
+    db::{repository::testcase_set::TestcaseSetRepository, PgPool},
+    server::model::testcase_sets::FTestcaseSet,
 };
 use actix_web::{
     error::ErrorInternalServerError,
@@ -7,29 +8,7 @@ use actix_web::{
     web::{Data, Form, Path},
     HttpResponse,
 };
-use chrono::{Local, NaiveDateTime};
 use diesel::Connection;
-use serde::Deserialize;
-
-#[derive(Deserialize)]
-pub struct FTestcaseSet {
-    pub name: String,
-    pub is_sample: bool,
-    pub score: i32,
-    pub created_at: NaiveDateTime,
-}
-
-impl FTestcaseSet {
-    fn to_model(&self, task_id: i32) -> NewTestcaseSet {
-        NewTestcaseSet {
-            name: self.name.clone(),
-            is_sample: self.is_sample,
-            score: self.score,
-            created_at: Local::now().naive_local(),
-            task_id,
-        }
-    }
-}
 
 #[post("/tasks/{task_id}/testcase_sets")]
 pub async fn handle_register_testcase_sets(

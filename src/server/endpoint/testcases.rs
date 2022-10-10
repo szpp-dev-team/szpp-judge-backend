@@ -1,34 +1,16 @@
 use crate::{
-    db::{model::testcase::NewTestcase, repository::testcase::TestcaseRepository, PgPool},
+    db::{repository::testcase::TestcaseRepository, PgPool},
     gcs::Client,
+    server::model::testcases::FTestcase,
 };
 use actix_web::{
-    error::ErrorInternalServerError, post,
+    error::ErrorInternalServerError,
+    post,
     web::{Data, Form, Path},
     HttpResponse,
 };
-use chrono::Local;
 use diesel::Connection;
-use serde::Deserialize;
 use tokio::runtime::Runtime;
-
-#[derive(Deserialize)]
-pub struct FTestcase {
-    pub name: String,
-    pub task_id: i32,
-    pub input: String,
-    pub output: String,
-}
-
-impl FTestcase {
-    fn to_model(&self, task_id: i32) -> NewTestcase {
-        NewTestcase {
-            name: self.name.clone(),
-            task_id,
-            created_at: Local::now().naive_local(),
-        }
-    }
-}
 
 #[post("/tasks/{task_id}/testcases")]
 pub async fn handle_register_testcases(

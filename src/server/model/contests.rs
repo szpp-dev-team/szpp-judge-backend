@@ -4,7 +4,7 @@ use serde::Deserialize;
 use crate::db::model::contest::NewContest;
 
 #[derive(Deserialize)]
-pub struct Contest {
+pub struct ContestPayload {
     pub name: String,
     pub slug: String,
     pub category: String,
@@ -14,7 +14,7 @@ pub struct Contest {
     pub penalty: i32, // seconds
 }
 
-impl Contest {
+impl ContestPayload {
     pub fn to_model(&self) -> NewContest {
         NewContest {
             name: self.name.clone(),

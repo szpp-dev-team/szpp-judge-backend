@@ -3,7 +3,7 @@ use serde::Deserialize;
 use crate::db::model::task::NewTask;
 
 #[derive(Deserialize)]
-pub struct Task {
+pub struct TaskPayload {
     pub name: String,
     pub statement: String,
     pub part_score: Option<String>,
@@ -18,7 +18,7 @@ pub struct Task {
     pub is_public: bool,
 }
 
-impl Task {
+impl TaskPayload {
     pub fn to_model(&self, author_id: i32) -> NewTask {
         NewTask {
             name: self.name.clone(),

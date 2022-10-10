@@ -1,7 +1,7 @@
 use crate::{
     db::{repository::testcase::TestcaseRepository, PgPool},
     gcs::Client,
-    server::model::testcases::Testcase,
+    server::model::testcases::TestcasePayload,
 };
 use actix_web::{
     delete,
@@ -17,7 +17,7 @@ use tokio::runtime::Runtime;
 pub async fn handle_register_testcase(
     db_pool: Data<PgPool>,
     gcs_client: Data<Client>,
-    data: Json<Testcase>,
+    data: Json<TestcasePayload>,
     task_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_testcase = data.to_model(*task_id);
@@ -44,7 +44,7 @@ pub async fn handle_register_testcase(
 pub async fn handle_register_testcases(
     db_pool: Data<PgPool>,
     gcs_client: Data<Client>,
-    data: Json<Vec<Testcase>>,
+    data: Json<Vec<TestcasePayload>>,
     task_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_testcases = data

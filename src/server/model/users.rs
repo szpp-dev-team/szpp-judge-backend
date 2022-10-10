@@ -4,13 +4,13 @@ use serde::Deserialize;
 use crate::{db::model::user::NewUser, util::hash_password};
 
 #[derive(Deserialize)]
-pub struct User {
+pub struct UserPayload {
     pub username: String,
     pub password: String,
     pub display_name: Option<String>,
 }
 
-impl User {
+impl UserPayload {
     pub fn to_model(&self) -> NewUser {
         NewUser {
             username: self.username.clone(),

@@ -4,8 +4,8 @@ use crate::{
 };
 use actix_web::{
     error::ErrorInternalServerError,
-    post,
-    web::{Data, Json},
+    post, put,
+    web::{Data, Json, Path},
     HttpResponse,
 };
 use diesel::Connection;
@@ -27,5 +27,27 @@ pub async fn handle_register_task(
             Ok::<_, anyhow::Error>(task)
         })
         .map_err(ErrorInternalServerError)?;
+    Ok(HttpResponse::Ok().json(&task))
+}
+
+#[put("/tasks/{task_id}")]
+pub async fn handle_update_task(
+    user: Claims,
+    db_pool: Data<PgPool>,
+    data: Json<Task>,
+    task_id: Path<i32>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let new_task = data.to_model(user.id);
+    let mut conn = db_pool
+        .get()
+        .map_err(actix_web::error::ErrorInternalServerError)?;
+
+    let task = conn
+        .transaction(|conn| {
+            let task = conn.update_task(*task_id, &new_task)?;
+            Ok::<_, anyhow::Error>(task)
+        })
+        .map_err(ErrorInternalServerError)?;
+
     Ok(HttpResponse::Ok().json(&task))
 }

@@ -11,6 +11,7 @@ pub struct User {
     pub session_token: Option<String>,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
 }
 
 #[derive(Insertable, Debug)]

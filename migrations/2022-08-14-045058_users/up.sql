@@ -5,5 +5,6 @@ CREATE TABLE users (
     display_name VARCHAR,
     session_token VARCHAR UNIQUE,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP
+    updated_at TIMESTAMP,
+    deleted_at TIMESTAMP
 );

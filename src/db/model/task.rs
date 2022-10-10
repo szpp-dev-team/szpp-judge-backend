@@ -19,6 +19,7 @@ pub struct Task {
     pub is_public: bool,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
     pub contest_id: Option<i32>,
     pub author_id: i32,
 }

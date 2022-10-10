@@ -12,6 +12,7 @@ diesel::table! {
         penalty -> Int4,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
     }
 }
 
@@ -23,6 +24,7 @@ diesel::table! {
         language_id -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
         user_id -> Int4,
         task_id -> Int4,
         contest_id -> Int4,
@@ -46,6 +48,7 @@ diesel::table! {
         is_public -> Bool,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
         contest_id -> Nullable<Int4>,
         author_id -> Int4,
     }
@@ -59,6 +62,7 @@ diesel::table! {
         score -> Int4,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
         task_id -> Int4,
     }
 }
@@ -66,6 +70,9 @@ diesel::table! {
 diesel::table! {
     testcase_testcase_sets (id) {
         id -> Int4,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
         testcase_id -> Int4,
         testcase_set_id -> Int4,
     }
@@ -77,6 +84,7 @@ diesel::table! {
         name -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
         task_id -> Int4,
     }
 }
@@ -90,6 +98,7 @@ diesel::table! {
         session_token -> Nullable<Varchar>,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
     }
 }
 

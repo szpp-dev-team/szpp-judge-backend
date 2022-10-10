@@ -5,6 +5,7 @@ CREATE TABLE submits (
     language_id VARCHAR NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,
+    deleted_at TIMESTAMP,
 
     user_id SERIAL NOT NULL,
     task_id SERIAL NOT NULL,

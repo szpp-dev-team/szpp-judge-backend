@@ -18,6 +18,7 @@ CREATE TABLE tasks (
     is_public BOOLEAN NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,
+    deleted_at TIMESTAMP,
     contest_id INT,
     author_id INT NOT NULL,
     FOREIGN KEY (contest_id)

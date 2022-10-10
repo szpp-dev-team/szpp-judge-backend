@@ -15,6 +15,7 @@ pub struct Contest {
     pub penalty: i32,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
 }
 
 #[derive(Insertable, Debug)]

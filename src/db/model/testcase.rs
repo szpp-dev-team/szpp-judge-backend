@@ -9,6 +9,7 @@ pub struct Testcase {
     pub name: String,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
     pub task_id: i32,
 }
 

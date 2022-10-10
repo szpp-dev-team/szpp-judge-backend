@@ -4,6 +4,7 @@ use crate::{
     server::model::testcases::Testcase,
 };
 use actix_web::{
+    delete,
     error::ErrorInternalServerError,
     post,
     web::{Data, Json, Path},
@@ -60,6 +61,34 @@ pub async fn handle_register_testcases(
                 for (testcase, data) in testcases.iter().zip(data.iter()) {
                     gcs_client
                         .upload_testcase(testcase.id, &testcase.name, &data.input, &data.output)
+                        .await?;
+                }
+                Ok::<_, anyhow::Error>(())
+            })?;
+            Ok::<_, anyhow::Error>(testcases)
+        })
+        .map_err(ErrorInternalServerError)?;
+
+    Ok(HttpResponse::Ok().json(&testcases))
+}
+
+#[delete("/tasks/{task_id}/testcases")]
+pub async fn handle_delete_testcases(
+    db_pool: Data<PgPool>,
+    gcs_client: Data<Client>,
+    data: Json<Vec<i32>>,
+    task_id: Path<i32>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
+
+    let rt = Runtime::new().map_err(ErrorInternalServerError)?;
+    let testcases = conn
+        .transaction(|conn| {
+            let testcases = conn.delete_testcases(*task_id, &data)?;
+            rt.block_on(async {
+                for testcase in &testcases {
+                    gcs_client
+                        .remove_testcase(testcase.task_id, &testcase.name)
                         .await?;
                 }
                 Ok::<_, anyhow::Error>(())

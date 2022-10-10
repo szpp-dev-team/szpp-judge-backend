@@ -11,8 +11,8 @@ CREATE TABLE tasks (
     memory_limit INT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,
-    contest_id SERIAL,
-    author_id SERIAL,
+    contest_id INT,
+    author_id INT NOT NULL,
     FOREIGN KEY (contest_id)
         REFERENCES contests (id),
     FOREIGN KEY (author_id)

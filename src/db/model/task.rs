@@ -16,6 +16,8 @@ pub struct Task {
     pub memory_limit: i32,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
+    pub contest_id: Option<i32>,
+    pub author_id: i32,
 }
 
 #[derive(Insertable)]
@@ -31,4 +33,6 @@ pub struct NewTask {
     pub time_limit: i32,
     pub memory_limit: i32,
     pub created_at: NaiveDateTime,
+    pub contest_id: Option<i32>,
+    pub author_id: i32,
 }

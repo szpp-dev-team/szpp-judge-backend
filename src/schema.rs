@@ -43,7 +43,7 @@ diesel::table! {
         memory_limit -> Int4,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
-        contest_id -> Int4,
+        contest_id -> Nullable<Int4>,
         author_id -> Int4,
     }
 }

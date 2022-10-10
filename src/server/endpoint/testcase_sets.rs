@@ -28,3 +28,20 @@ pub async fn handle_register_testcase_sets(
 
     Ok(HttpResponse::Ok().json(&testcase))
 }
+
+#[post("/tasks/{task_id}/testcase_sets/{testcase_set_id}")]
+pub async fn handle_link_testcase_sets(
+    db_pool: Data<PgPool>,
+    data: Json<Vec<i32>>,
+    path: Path<(i32, i32)>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
+
+    conn.transaction(|conn| {
+        conn.link_testcase_with_testcase_set(path.1, &data)?;
+        Ok::<_, anyhow::Error>(())
+    })
+    .map_err(ErrorInternalServerError)?;
+
+    Ok(HttpResponse::Ok().finish())
+}

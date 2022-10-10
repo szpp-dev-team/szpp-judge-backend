@@ -31,6 +31,8 @@ pub struct TestcaseTestcaseSet {
     pub testcase_set_id: i32,
 }
 
+#[derive(Insertable)]
+#[diesel(table_name = testcase_testcase_sets)]
 pub struct NewTestcaseTestcaseSet {
     pub testcase_id: i32,
     pub testcase_set_id: i32,

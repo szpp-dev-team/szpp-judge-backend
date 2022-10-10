@@ -1,7 +1,7 @@
 use chrono::{Local, NaiveDateTime};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-use crate::db::model::testcase_sets::NewTestcaseSet;
+use crate::db::model::{testcase::Testcase, testcase_sets::NewTestcaseSet};
 
 #[derive(Deserialize)]
 pub struct TestcaseSetPayload {
@@ -21,4 +21,13 @@ impl TestcaseSetPayload {
             task_id,
         }
     }
+}
+
+#[derive(Serialize)]
+pub struct TestcaseSetBody {
+    pub name: String,
+    pub is_sample: bool,
+    pub score: i32,
+    pub testcases: Vec<Testcase>,
+    pub created_at: NaiveDateTime,
 }

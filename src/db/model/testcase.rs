@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Queryable, Debug, Serialize, Deserialize)]
+#[derive(Queryable, Debug, Serialize, Deserialize, Identifiable, Hash, PartialEq, Eq)]
 pub struct Testcase {
     pub id: i32,
     pub name: String,

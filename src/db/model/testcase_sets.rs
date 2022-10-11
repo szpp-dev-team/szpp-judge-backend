@@ -2,7 +2,7 @@ use crate::schema::*;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
-#[derive(Queryable, Serialize, Deserialize)]
+#[derive(Queryable, Serialize, Deserialize, Identifiable, Clone)]
 pub struct TestcaseSet {
     pub id: i32,
     pub name: String,
@@ -25,8 +25,12 @@ pub struct NewTestcaseSet {
 }
 
 // TODO: いい感じの名前にする
+#[derive(Queryable, Identifiable)]
 pub struct TestcaseTestcaseSet {
     pub id: i32,
+    pub created_at: NaiveDateTime,
+    pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
     pub testcase_id: i32,
     pub testcase_set_id: i32,
 }

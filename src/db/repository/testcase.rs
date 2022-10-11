@@ -1,13 +1,21 @@
 use crate::db::{
-    model::testcase::{NewTestcase, Testcase},
+    model::{
+        testcase::{NewTestcase, Testcase},
+        testcase_sets::{TestcaseSet, TestcaseTestcaseSet},
+    },
     PgPooledConn,
 };
 use anyhow::Result;
 use chrono::Local;
-use diesel::{insert_into, prelude::*, update};
+use diesel::{insert_into, prelude::*, update, ExpressionMethods};
 
 pub trait TestcaseRepository {
     fn fetch_testcase(&mut self, testcase_id: i32) -> Result<Testcase>;
+    // TODO: join した結果の型を作る
+    fn fetch_testcases_by_task_id(
+        &mut self,
+        task_id: i32,
+    ) -> Result<Vec<(TestcaseTestcaseSet, Testcase, TestcaseSet)>>;
     fn insert_testcase(&mut self, new_testcase: &NewTestcase) -> Result<Testcase>;
     fn insert_testcases(&mut self, new_testcases: &[NewTestcase]) -> Result<Vec<Testcase>>;
     fn delete_testcases(&mut self, task_id: i32, testcase_ids: &[i32]) -> Result<Vec<Testcase>>;
@@ -19,6 +27,19 @@ impl TestcaseRepository for PgPooledConn {
         let res = testcases::table
             .filter(testcases::id.eq(testcase_id))
             .get_result(self)?;
+        Ok(res)
+    }
+
+    fn fetch_testcases_by_task_id(
+        &mut self,
+        task_id: i32,
+    ) -> Result<Vec<(TestcaseTestcaseSet, Testcase, TestcaseSet)>> {
+        use crate::schema::{testcase_sets, testcase_testcase_sets::dsl::*, testcases};
+        let res = testcase_testcase_sets
+            .filter(testcases::id.eq(task_id))
+            .inner_join(testcases::table)
+            .inner_join(testcase_sets::table)
+            .load(self)?;
         Ok(res)
     }
 

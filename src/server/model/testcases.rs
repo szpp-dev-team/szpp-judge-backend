@@ -1,7 +1,10 @@
 use chrono::{Local, NaiveDateTime};
 use serde::{Deserialize, Serialize};
 
-use crate::db::model::testcase::{NewTestcase, Testcase};
+use crate::db::model::{
+    testcase::{NewTestcase, Testcase},
+    testcase_sets::TestcaseSet,
+};
 
 #[derive(Deserialize)]
 pub struct TestcasePayload {
@@ -42,6 +45,25 @@ impl TestcaseBody {
             output: String::from_utf8(output).unwrap(),
             created_at: testcase.created_at,
             updated_at: testcase.updated_at,
+        }
+    }
+}
+
+#[derive(Serialize)]
+pub struct TestcaseInfo {
+    pub id: i32,
+    pub name: String,
+    pub task_id: i32,
+    pub testcase_set: Vec<TestcaseSet>,
+}
+
+impl TestcaseInfo {
+    pub fn from_model(testcase: &Testcase, testcase_sets: &[TestcaseSet]) -> Self {
+        Self {
+            id: testcase.id,
+            name: testcase.name.clone(),
+            task_id: testcase.task_id,
+            testcase_set: testcase_sets.to_vec(),
         }
     }
 }

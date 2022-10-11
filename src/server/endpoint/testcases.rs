@@ -1,7 +1,9 @@
+use std::collections::HashMap;
+
 use crate::{
     db::{repository::testcase::TestcaseRepository, PgPool},
     gcs::Client,
-    server::model::testcases::{TestcaseBody, TestcasePayload},
+    server::model::testcases::{TestcaseBody, TestcaseInfo, TestcasePayload},
 };
 use actix_web::{
     delete,
@@ -39,6 +41,28 @@ pub async fn handle_get_testcase(
         .map_err(ErrorInternalServerError)?;
 
     Ok(HttpResponse::Ok().json(&testcase_body))
+}
+
+#[get("/tasks/{task_id}/testcases")]
+pub async fn handle_get_testcases(
+    db_pool: Data<PgPool>,
+    task_id: Path<i32>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
+
+    let list = conn
+        .fetch_testcases_by_task_id(*task_id)
+        .map_err(ErrorInternalServerError)?;
+    let mut mp = HashMap::new();
+    for (_, testcase, testcase_set) in list {
+        mp.entry(testcase).or_insert(Vec::new()).push(testcase_set);
+    }
+    let testcases = mp
+        .iter()
+        .map(|(testcase, testcase_set)| TestcaseInfo::from_model(testcase, testcase_set))
+        .collect::<Vec<_>>();
+
+    Ok(HttpResponse::Ok().json(&testcases))
 }
 
 #[post("/tasks/{task_id}/testcases")]

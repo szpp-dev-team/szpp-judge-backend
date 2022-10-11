@@ -70,18 +70,29 @@ VALUES (3, 'sample3.txt',
 
 DELETE
 FROM testcase_sets
-WHERE id = 1;
+WHERE id = 1 OR id = 2;
 INSERT INTO testcase_sets (id, name, is_sample, score, created_at, task_id)
 VALUES (1, 'sample', true, 0, now(), 1);
+INSERT INTO testcase_sets (id, name, is_sample, score, created_at, task_id)
+VALUES (2, 'all', true, 0, now(), 1);
 
 DELETE
 FROM testcase_testcase_sets
 WHERE id = 1
    OR id = 2
-   OR id = 3;
+   OR id = 3
+   OR id = 4
+   OR id = 5
+   OR id = 6;
 INSERT INTO testcase_testcase_sets (id, created_at, testcase_id, testcase_set_id)
 VALUES (1, now(), 1, 1);
 INSERT INTO testcase_testcase_sets (id, created_at, testcase_id, testcase_set_id)
 VALUES (2, now(), 2, 1);
 INSERT INTO testcase_testcase_sets (id, created_at, testcase_id, testcase_set_id)
 VALUES (3, now(), 3, 1);
+INSERT INTO testcase_testcase_sets (id, created_at, testcase_id, testcase_set_id)
+VALUES (4, now(), 1, 2);
+INSERT INTO testcase_testcase_sets (id, created_at, testcase_id, testcase_set_id)
+VALUES (5, now(), 2, 2);
+INSERT INTO testcase_testcase_sets (id, created_at, testcase_id, testcase_set_id)
+VALUES (6, now(), 3, 2);

@@ -20,7 +20,9 @@ diesel::table! {
     submits (id) {
         id -> Int4,
         status -> Varchar,
-        source_id -> Varchar,
+        score -> Nullable<Int4>,
+        execution_time -> Nullable<Int4>,
+        execution_memory -> Nullable<Int4>,
         language_id -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,

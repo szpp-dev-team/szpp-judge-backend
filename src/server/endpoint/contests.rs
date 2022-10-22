@@ -1,6 +1,6 @@
 use crate::{
     db::{repository::contest::ContestRepository, PgPool},
-    server::model::contests::ContestPayload,
+    server::model::contests::{ContestPayload, ContestResponse},
 };
 use actix_web::{
     error::{ErrorInternalServerError, ErrorNotFound},
@@ -21,7 +21,8 @@ pub async fn handle_register_contest(
     let contest = conn
         .insert_contest(&new_contest)
         .map_err(ErrorInternalServerError)?;
-    Ok(HttpResponse::Ok().json(&contest))
+    let contest_resp = ContestResponse::from_model(&contest);
+    Ok(HttpResponse::Ok().json(&contest_resp))
 }
 
 #[get("/contests/{contest_id}")]
@@ -37,5 +38,6 @@ pub async fn handle_get_contest(
             ErrorInternalServerError(e)
         }
     })?;
-    Ok(HttpResponse::Ok().json(&contest))
+    let contest_resp = ContestResponse::from_model(&contest);
+    Ok(HttpResponse::Ok().json(&contest_resp))
 }

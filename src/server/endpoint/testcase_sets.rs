@@ -1,6 +1,6 @@
 use crate::{
     db::{repository::testcase_set::TestcaseSetRepository, PgPool},
-    server::model::testcase_sets::TestcaseSetPayload,
+    server::model::testcase_sets::{TestcaseSetPayload, TestcaseSetResponse},
 };
 use actix_web::{
     error::ErrorInternalServerError,
@@ -19,14 +19,15 @@ pub async fn handle_register_testcase_sets(
     let new_testcase_set = data.to_model(*task_id);
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
 
-    let testcase = conn
+    let testcase_set = conn
         .transaction(|conn| {
             let testcase = conn.insert_testcase_set(&new_testcase_set)?;
             Ok::<_, anyhow::Error>(testcase)
         })
         .map_err(ErrorInternalServerError)?;
 
-    Ok(HttpResponse::Ok().json(&testcase))
+    let testcase_set_resp = TestcaseSetResponse::from_model(&testcase_set, None);
+    Ok(HttpResponse::Ok().json(&testcase_set_resp))
 }
 
 #[post("/tasks/{task_id}/testcase_sets/{testcase_set_id}")]
@@ -43,5 +44,6 @@ pub async fn handle_link_testcase_sets(
     })
     .map_err(ErrorInternalServerError)?;
 
+    // TODO: 何かしら返す
     Ok(HttpResponse::Ok().finish())
 }

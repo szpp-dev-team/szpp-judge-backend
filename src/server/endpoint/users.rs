@@ -1,5 +1,5 @@
 use crate::db::{repository::user::UserRepository, PgPool};
-use crate::server::model::users::UserPayload;
+use crate::server::model::users::{UserPayload, UserResponse};
 use actix_web::web::Json;
 use actix_web::{
     error::{ErrorInternalServerError, ErrorNotFound},
@@ -20,7 +20,8 @@ pub async fn handle_register_user(
         .insert_user(&new_user)
         .map_err(ErrorInternalServerError)?;
 
-    Ok(HttpResponse::Ok().json(&user))
+    let user_resp = UserResponse::from_model(&user);
+    Ok(HttpResponse::Ok().json(&user_resp))
 }
 
 #[get("/users/{user_id}")]
@@ -36,5 +37,7 @@ pub async fn handle_get_user(
             ErrorInternalServerError(e)
         }
     })?;
-    Ok(HttpResponse::Ok().json(&user))
+
+    let user_resp = UserResponse::from_model(&user);
+    Ok(HttpResponse::Ok().json(&user_resp))
 }

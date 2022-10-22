@@ -9,7 +9,10 @@ use diesel::Connection;
 use crate::{
     db::{repository::submit::SubmitRepository, PgPool},
     gcs::Client,
-    server::{middleware::auth::Claims, model::submits::SubmitPayload},
+    server::{
+        middleware::auth::Claims,
+        model::submits::{SubmitPayload, SubmitResponse},
+    },
 };
 
 #[post("/submits")]
@@ -35,7 +38,8 @@ pub async fn handle_submit(
         .await
         .map_err(ErrorInternalServerError)?;
 
-    Ok(HttpResponse::Ok().json(&submit))
+    let submit_resp = SubmitResponse::from_model(&submit);
+    Ok(HttpResponse::Ok().json(&submit_resp))
 }
 
 #[get("/submits")]
@@ -47,7 +51,10 @@ pub async fn handle_get_submits(
         .get()
         .map_err(actix_web::error::ErrorInternalServerError)?;
 
-    let submit = conn.fetch_submits().map_err(ErrorInternalServerError)?;
-
-    Ok(HttpResponse::Ok().json(&submit))
+    let submits = conn.fetch_submits().map_err(ErrorInternalServerError)?;
+    let submits_resp = submits
+        .iter()
+        .map(SubmitResponse::from_model)
+        .collect::<Vec<_>>();
+    Ok(HttpResponse::Ok().json(&submits_resp))
 }

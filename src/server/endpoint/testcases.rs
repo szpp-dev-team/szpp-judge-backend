@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::{
     db::{repository::testcase::TestcaseRepository, PgPool},
     gcs::Client,
-    server::model::testcases::{TestcaseBody, TestcaseInfo, TestcasePayload},
+    server::model::testcases::{TestcaseInfoResponse, TestcasePayload, TestcaseResponse},
 };
 use actix_web::{
     delete,
@@ -25,7 +25,7 @@ pub async fn handle_get_testcase(
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
 
     let rt = Runtime::new().unwrap();
-    let testcase_body = conn
+    let testcase_resp = conn
         .transaction(|conn| {
             let testcase = conn.fetch_testcase(*testcase_id)?;
             let (input, output) = rt.block_on(async {
@@ -34,13 +34,13 @@ pub async fn handle_get_testcase(
                     .await?;
                 Ok::<_, anyhow::Error>((input, output))
             })?;
-            let testcase_body = TestcaseBody::from_model(&testcase, input, output);
+            let testcase_resp = TestcaseResponse::from_model(&testcase, input, output);
 
-            Ok::<_, anyhow::Error>(testcase_body)
+            Ok::<_, anyhow::Error>(testcase_resp)
         })
         .map_err(ErrorInternalServerError)?;
 
-    Ok(HttpResponse::Ok().json(&testcase_body))
+    Ok(HttpResponse::Ok().json(&testcase_resp))
 }
 
 #[get("/tasks/{task_id}/testcases")]
@@ -57,12 +57,12 @@ pub async fn handle_get_testcases(
     for (_, testcase, testcase_set) in list {
         mp.entry(testcase).or_insert(Vec::new()).push(testcase_set);
     }
-    let testcases = mp
-        .iter()
-        .map(|(testcase, testcase_set)| TestcaseInfo::from_model(testcase, testcase_set))
-        .collect::<Vec<_>>();
 
-    Ok(HttpResponse::Ok().json(&testcases))
+    let testcases_resp = mp
+        .iter()
+        .map(|(testcase, testcase_set)| TestcaseInfoResponse::from_model(testcase, testcase_set))
+        .collect::<Vec<_>>();
+    Ok(HttpResponse::Ok().json(&testcases_resp))
 }
 
 #[post("/tasks/{task_id}/testcases")]
@@ -89,7 +89,12 @@ pub async fn handle_register_testcase(
         })
         .map_err(ErrorInternalServerError)?;
 
-    Ok(HttpResponse::Ok().json(&testcase))
+    let testcase_resp = TestcaseResponse::from_model(
+        &testcase,
+        data.input.bytes().collect(),
+        data.output.bytes().collect(),
+    );
+    Ok(HttpResponse::Ok().json(&testcase_resp))
 }
 
 #[post("/tasks/{task_id}/testcases")]
@@ -121,7 +126,11 @@ pub async fn handle_register_testcases(
         })
         .map_err(ErrorInternalServerError)?;
 
-    Ok(HttpResponse::Ok().json(&testcases))
+    let testcases_resp = testcases
+        .iter()
+        .map(|testcase| TestcaseInfoResponse::from_model(testcase, &[]))
+        .collect::<Vec<_>>();
+    Ok(HttpResponse::Ok().json(&testcases_resp))
 }
 
 #[delete("/tasks/{task_id}/testcases")]
@@ -149,5 +158,9 @@ pub async fn handle_delete_testcases(
         })
         .map_err(ErrorInternalServerError)?;
 
-    Ok(HttpResponse::Ok().json(&testcases))
+    let testcases_resp = testcases
+        .iter()
+        .map(|testcase| TestcaseInfoResponse::from_model(testcase, &[]))
+        .collect::<Vec<_>>();
+    Ok(HttpResponse::Ok().json(&testcases_resp))
 }

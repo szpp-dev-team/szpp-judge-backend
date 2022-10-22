@@ -1,6 +1,9 @@
 use crate::{
     db::{repository::task::TaskRepository, PgPool},
-    server::{middleware::auth::Claims, model::tasks::TaskPayload},
+    server::{
+        middleware::auth::Claims,
+        model::tasks::{TaskPayload, TaskResponse},
+    },
 };
 use actix_web::{
     error::ErrorInternalServerError,
@@ -27,7 +30,9 @@ pub async fn handle_register_task(
             Ok::<_, anyhow::Error>(task)
         })
         .map_err(ErrorInternalServerError)?;
-    Ok(HttpResponse::Ok().json(&task))
+
+    let task_resp = TaskResponse::from_model(&task);
+    Ok(HttpResponse::Ok().json(&task_resp))
 }
 
 #[put("/tasks/{task_id}")]
@@ -49,5 +54,6 @@ pub async fn handle_update_task(
         })
         .map_err(ErrorInternalServerError)?;
 
-    Ok(HttpResponse::Ok().json(&task))
+    let task_resp = TaskResponse::from_model(&task);
+    Ok(HttpResponse::Ok().json(&task_resp))
 }

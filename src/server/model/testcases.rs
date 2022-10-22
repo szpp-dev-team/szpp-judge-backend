@@ -25,7 +25,7 @@ impl TestcasePayload {
 }
 
 #[derive(Serialize)]
-pub struct TestcaseBody {
+pub struct TestcaseResponse {
     pub id: i32,
     pub name: String,
     pub task_id: i32,
@@ -35,7 +35,7 @@ pub struct TestcaseBody {
     pub updated_at: Option<NaiveDateTime>,
 }
 
-impl TestcaseBody {
+impl TestcaseResponse {
     pub fn from_model(testcase: &Testcase, input: Vec<u8>, output: Vec<u8>) -> Self {
         Self {
             id: testcase.id,
@@ -50,14 +50,14 @@ impl TestcaseBody {
 }
 
 #[derive(Serialize)]
-pub struct TestcaseInfo {
+pub struct TestcaseInfoResponse {
     pub id: i32,
     pub name: String,
     pub task_id: i32,
     pub testcase_set: Vec<TestcaseSet>,
 }
 
-impl TestcaseInfo {
+impl TestcaseInfoResponse {
     pub fn from_model(testcase: &Testcase, testcase_sets: &[TestcaseSet]) -> Self {
         Self {
             id: testcase.id,

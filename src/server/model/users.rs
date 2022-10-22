@@ -1,7 +1,10 @@
-use chrono::Local;
-use serde::Deserialize;
+use chrono::{Local, NaiveDateTime};
+use serde::{Deserialize, Serialize};
 
-use crate::{db::model::user::NewUser, util::hash_password};
+use crate::{
+    db::model::user::{NewUser, User},
+    util::hash_password,
+};
 
 #[derive(Deserialize)]
 pub struct UserPayload {
@@ -18,6 +21,31 @@ impl UserPayload {
             display_name: self.display_name.clone(),
             session_token: None,
             created_at: Local::now().naive_local(),
+        }
+    }
+}
+
+#[derive(Serialize)]
+pub struct UserResponse {
+    pub id: i32,
+    pub username: String,
+    pub encrypted_password: String,
+    pub display_name: Option<String>,
+    pub session_token: Option<String>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: Option<NaiveDateTime>,
+}
+
+impl UserResponse {
+    pub fn from_model(user: &User) -> Self {
+        Self {
+            id: user.id,
+            username: user.username.clone(),
+            encrypted_password: user.encrypted_password.clone(),
+            display_name: user.display_name.clone(),
+            session_token: user.session_token.clone(),
+            created_at: user.created_at,
+            updated_at: user.updated_at,
         }
     }
 }

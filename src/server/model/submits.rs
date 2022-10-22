@@ -22,6 +22,7 @@ impl SubmitPayload {
             score: None,
             execution_time: None,
             execution_memory: None,
+            compile_message: None,
             created_at: chrono::Local::now().naive_local(),
             updated_at: None,
             deleted_at: None,

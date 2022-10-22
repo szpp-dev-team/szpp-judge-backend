@@ -1621,6 +1621,7 @@ dependencies = [
  "futures",
  "jsonwebtoken 8.1.1",
  "once_cell",
+ "reqwest",
  "serde",
  "sha2",
  "tokio",

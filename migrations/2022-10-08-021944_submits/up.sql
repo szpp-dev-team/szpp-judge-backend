@@ -1,9 +1,9 @@
 CREATE TABLE submits (
     id SERIAL PRIMARY KEY,
     status VARCHAR NOT NULL,
-    score INT NULL,
-    execution_time INT NULL,
-    execution_memory INT NULL,
+    score INT,
+    execution_time INT,
+    execution_memory INT,
     language_id VARCHAR NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,

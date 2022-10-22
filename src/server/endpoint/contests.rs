@@ -4,7 +4,7 @@ use crate::{
 };
 use actix_web::{
     error::{ErrorInternalServerError, ErrorNotFound},
-    get, post,
+    get, post, put,
     web::Path,
     web::{Data, Json},
     HttpResponse,
@@ -40,4 +40,13 @@ pub async fn handle_get_contest(
     })?;
     let contest_resp = ContestResponse::from_model(&contest);
     Ok(HttpResponse::Ok().json(&contest_resp))
+}
+
+#[put("/contests/{contest_id}")]
+pub async fn handle_update_contest(
+    db_pool: Data<PgPool>,
+    data: Json<ContestPayload>,
+    contest_id: Path<i32>,
+) -> Result<HttpResponse, actix_web::Error> {
+    unimplemented!()
 }

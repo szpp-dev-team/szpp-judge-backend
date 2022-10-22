@@ -9,7 +9,7 @@ use actix_web::{
     error::ErrorInternalServerError,
     post, put,
     web::{Data, Json, Path},
-    HttpResponse,
+    HttpResponse, get,
 };
 use diesel::Connection;
 
@@ -56,4 +56,13 @@ pub async fn handle_update_task(
 
     let task_resp = TaskResponse::from_model(&task);
     Ok(HttpResponse::Ok().json(&task_resp))
+}
+
+#[get("/tasks/{task_id}")]
+pub async fn handle_get_task(
+    _user: Claims,
+    db_pool: Data<PgPool>,
+    task_id: Path<i32>,
+) -> Result<HttpResponse, actix_web::Error> {
+    unimplemented!()
 }

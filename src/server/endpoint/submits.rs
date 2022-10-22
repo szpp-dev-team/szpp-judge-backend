@@ -1,7 +1,7 @@
 use actix_web::{
     error::ErrorInternalServerError,
     get, post,
-    web::{Data, Json},
+    web::{Data, Json, Path},
     HttpResponse,
 };
 use diesel::Connection;
@@ -75,4 +75,13 @@ pub async fn handle_get_submits(
         .map(SubmitResponse::from_model)
         .collect::<Vec<_>>();
     Ok(HttpResponse::Ok().json(&submits_resp))
+}
+
+#[get("/submits/{submit_id}")]
+pub async fn handle_get_submit(
+    _user: Claims,
+    db_pool: Data<PgPool>,
+    submit_id: Path<i32>,
+) -> Result<HttpResponse, actix_web::Error> {
+    unimplemented!()
 }

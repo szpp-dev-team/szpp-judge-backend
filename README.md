@@ -2,6 +2,22 @@
 
 ## setup
 
+### 0. credentials
+
+`.env`
+```
+DATABASE_URL=postgres://root:root@localhost:5432/szpp-judge
+GOOGLE_APPLICATION_CREDENTIALS=credentials.json
+```
+
+`credentials.json`
+```json
+{
+  "type": "service_account",
+  .
+  .
+```
+
 ### 1. migration
 
 ```shell

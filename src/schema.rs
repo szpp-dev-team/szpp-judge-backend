@@ -23,6 +23,7 @@ diesel::table! {
         score -> Nullable<Int4>,
         execution_time -> Nullable<Int4>,
         execution_memory -> Nullable<Int4>,
+        compile_message -> Nullable<Varchar>,
         language_id -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,

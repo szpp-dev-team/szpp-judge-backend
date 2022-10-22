@@ -3,11 +3,13 @@ use crate::db::{
     PgPooledConn,
 };
 use anyhow::Result;
-use diesel::{insert_into, prelude::*};
+use diesel::{insert_into, prelude::*, update};
 
 pub trait SubmitRepository {
     fn insert_submit(&mut self, new_submit: &NewSubmit) -> Result<Submit>;
     fn fetch_submits(&mut self) -> Result<Vec<Submit>>;
+    fn fetch_submit_by_id(&mut self, id: i32) -> Result<Submit>;
+    fn update_submit(&mut self, new_submit: &Submit) -> Result<Submit>;
 }
 
 impl SubmitRepository for PgPooledConn {
@@ -22,6 +24,28 @@ impl SubmitRepository for PgPooledConn {
     fn fetch_submits(&mut self) -> Result<Vec<Submit>> {
         use crate::schema::submits::dsl::*;
         let res = submits.load(self)?;
+        Ok(res)
+    }
+
+    fn fetch_submit_by_id(&mut self, id2: i32) -> Result<Submit> {
+        use crate::schema::submits::dsl::*;
+        let res = submits.find(id2).first(self)?;
+        Ok(res)
+    }
+
+    fn update_submit(&mut self, new_submit: &Submit) -> Result<Submit> {
+        use crate::schema::submits;
+        use crate::schema::submits::dsl::*;
+        let res = update(submits::table)
+            .filter(id.eq(new_submit.id))
+            .set((
+                status.eq(&new_submit.status),
+                score.eq(new_submit.score),
+                execution_time.eq(new_submit.execution_time),
+                execution_memory.eq(new_submit.execution_memory),
+                updated_at.eq(chrono::Local::now().naive_local()),
+            ))
+            .get_result(self)?;
         Ok(res)
     }
 }

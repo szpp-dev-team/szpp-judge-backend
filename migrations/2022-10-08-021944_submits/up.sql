@@ -4,6 +4,7 @@ CREATE TABLE submits (
     score INT,
     execution_time INT,
     execution_memory INT,
+    compile_message VARCHAR,
     language_id VARCHAR NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,

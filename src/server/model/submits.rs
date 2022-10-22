@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use serde::Deserialize;
 
 use crate::db::model::submit::NewSubmit;
@@ -26,4 +27,23 @@ impl SubmitPayload {
             deleted_at: None,
         }
     }
+}
+
+#[derive(Deserialize)]
+pub struct SubmitResponse {
+    pub id: i32,
+    pub status: String,
+    pub score: Option<i32>,
+    pub execution_time: Option<i32>,
+    pub execution_memory: Option<i32>,
+    pub language_id: String,
+    pub created_at: NaiveDateTime,
+    pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
+
+    pub user_id: i32,
+    pub task_id: i32,
+    pub contest_id: i32,
+
+    pub source_code: Option<String>,
 }

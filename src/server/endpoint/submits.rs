@@ -1,6 +1,6 @@
 use actix_web::{
     error::ErrorInternalServerError,
-    post,
+    get, post,
     web::{Data, Json},
     HttpResponse,
 };
@@ -34,6 +34,20 @@ pub async fn handle_submit(
         .upload_submit_source(submit.id, &data.source_code)
         .await
         .map_err(ErrorInternalServerError)?;
+
+    Ok(HttpResponse::Ok().json(&submit))
+}
+
+#[get("/submits")]
+pub async fn handle_get_submits(
+    _user: Claims,
+    db_pool: Data<PgPool>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let mut conn = db_pool
+        .get()
+        .map_err(actix_web::error::ErrorInternalServerError)?;
+
+    let submit = conn.fetch_submits().map_err(ErrorInternalServerError)?;
 
     Ok(HttpResponse::Ok().json(&submit))
 }

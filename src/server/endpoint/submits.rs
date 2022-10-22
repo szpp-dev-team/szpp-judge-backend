@@ -7,8 +7,12 @@ use actix_web::{
 use diesel::Connection;
 
 use crate::{
-    db::{repository::submit::SubmitRepository, PgPool},
+    db::{
+        repository::{submit::SubmitRepository, testcase::TestcaseRepository},
+        PgPool,
+    },
     gcs::Client,
+    judge_runner::{JudgeQueue, JudgeRequest},
     server::{
         middleware::auth::Claims,
         model::submits::{SubmitPayload, SubmitResponse},
@@ -20,6 +24,7 @@ pub async fn handle_submit(
     user: Claims,
     cloud_storage_client: Data<Client>,
     db_pool: Data<PgPool>,
+    judge_queue: Data<JudgeQueue>,
     data: Json<SubmitPayload>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_submit = data.to_model(user.id);
@@ -37,6 +42,19 @@ pub async fn handle_submit(
         .upload_submit_source(submit.id, &data.source_code)
         .await
         .map_err(ErrorInternalServerError)?;
+
+    let testcases = conn
+        .fetch_testcases_by_task_id(submit.task_id)
+        .map_err(ErrorInternalServerError)?;
+    let testcase_names = testcases
+        .into_iter()
+        .map(|testcase| testcase.1.name)
+        .collect::<Vec<_>>();
+    judge_queue.lock().await.push_back(JudgeRequest {
+        submit_id: submit.id,
+        language_id: submit.language_id.clone(),
+        testcase_names,
+    });
 
     let submit_resp = SubmitResponse::from_model(&submit);
     Ok(HttpResponse::Ok().json(&submit_resp))

@@ -7,6 +7,8 @@ use serde::{Deserialize, Serialize};
 use std::{collections::VecDeque, sync::Arc, time::Duration};
 use tokio::{sync::Mutex, time::sleep};
 
+pub type JudgeQueue = Mutex<VecDeque<JudgeRequest>>;
+
 pub struct JudgeRunner {
     client: Arc<Client>,
     max_thread_num: usize,

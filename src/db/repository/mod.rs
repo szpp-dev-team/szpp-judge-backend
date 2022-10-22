@@ -1,3 +1,4 @@
+pub mod auth;
 pub mod contest;
 pub mod submit;
 pub mod task;

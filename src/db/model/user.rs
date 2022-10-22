@@ -8,7 +8,6 @@ pub struct User {
     pub username: String,
     pub encrypted_password: String,
     pub display_name: Option<String>,
-    pub session_token: Option<String>,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,
@@ -20,6 +19,5 @@ pub struct NewUser {
     pub username: String,
     pub encrypted_password: String,
     pub display_name: Option<String>,
-    pub session_token: Option<String>,
     pub created_at: NaiveDateTime,
 }

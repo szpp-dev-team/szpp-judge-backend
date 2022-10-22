@@ -98,7 +98,6 @@ diesel::table! {
         username -> Varchar,
         encrypted_password -> Varchar,
         display_name -> Nullable<Varchar>,
-        session_token -> Nullable<Varchar>,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,

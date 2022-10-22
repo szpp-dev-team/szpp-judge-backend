@@ -19,7 +19,6 @@ impl UserPayload {
             username: self.username.clone(),
             encrypted_password: hash_password(&self.password),
             display_name: self.display_name.clone(),
-            session_token: None,
             created_at: Local::now().naive_local(),
         }
     }
@@ -31,7 +30,6 @@ pub struct UserResponse {
     pub username: String,
     pub encrypted_password: String,
     pub display_name: Option<String>,
-    pub session_token: Option<String>,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
 }
@@ -43,7 +41,6 @@ impl UserResponse {
             username: user.username.clone(),
             encrypted_password: user.encrypted_password.clone(),
             display_name: user.display_name.clone(),
-            session_token: user.session_token.clone(),
             created_at: user.created_at,
             updated_at: user.updated_at,
         }

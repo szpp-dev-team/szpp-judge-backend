@@ -19,7 +19,7 @@ Migrations:
   [ ] 2022-10-08-050640_testcase_sets
   [ ] 2022-10-08-050646_testcases
 
-$ diesel run
+$ diesel migration run
 
 $ diesel migration list
 Migrations:
@@ -43,4 +43,14 @@ $ docker compose up -d db
 
 ```shell
 $ cargo run
+```
+
+## Tips
+
+### 1. want to re-migration all
+
+```shell
+$ diesel migration revert --all
+
+$ diesel migration run
 ```

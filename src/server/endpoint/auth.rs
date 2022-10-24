@@ -18,8 +18,8 @@ pub async fn handle_signin(
     let password = &data.password;
     let encrypted_password = hash_password(password);
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
-    match conn.fetch_user_by_credential(&data.username, &encrypted_password) {
-        Ok(s) => Ok(HttpResponse::Ok().json(&s)),
-        Err(e) => Err(ErrorUnauthorized(e)),
-    }
+    let user = conn
+        .fetch_user_by_credential(&data.username, &encrypted_password)
+        .map_err(ErrorUnauthorized)?;
+    Ok(HttpResponse::Ok().json(&user))
 }

@@ -36,7 +36,7 @@ impl TestcaseRepository for PgPooledConn {
     ) -> Result<Vec<(TestcaseTestcaseSet, Testcase, TestcaseSet)>> {
         use crate::schema::{testcase_sets, testcase_testcase_sets::dsl::*, testcases};
         let res = testcase_testcase_sets
-            .filter(testcases::id.eq(task_id))
+            .filter(testcases::task_id.eq(task_id))
             .inner_join(testcases::table)
             .inner_join(testcase_sets::table)
             .load(self)?;

@@ -15,10 +15,9 @@ VALUES (1,
 DELETE
 FROM users
 WHERE id = 1;
-INSERT INTO users (id, username, encrypted_password, display_name, session_token, created_at)
+INSERT INTO users (id, username, encrypted_password, display_name, created_at)
 VALUES (1, 'test_user',
         '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
-        NULL,
         NULL,
         now())
 ON CONFLICT (username)

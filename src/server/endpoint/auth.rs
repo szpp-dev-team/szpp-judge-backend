@@ -33,7 +33,7 @@ pub async fn handle_signin(
         .map_err(ErrorUnauthorized)?;
     let user = UserResponse::from_model(&user);
     let my_claims = Claims {
-        exp: Local::now().add(Duration::hours(24 * 7)).second() as usize,
+        exp: Local::now().add(Duration::hours(24 * 7)).timestamp() as usize,
         id: user.id,
         role: todo!("aaa"),
     };

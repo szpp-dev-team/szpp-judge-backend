@@ -11,7 +11,8 @@ pub struct Claims {
     pub role: String,
 }
 
-static SECRET: Lazy<String> = Lazy::new(|| "SECRET".to_string());
+use std::env;
+pub static SECRET: Lazy<String> = Lazy::new(|| env::var("JWT_SECRET").unwrap());
 
 impl FromRequest for Claims {
     type Error = Error;

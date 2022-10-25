@@ -1,8 +1,13 @@
+use std::ops::Add;
+
 use crate::{
     db::{repository::auth::AuthRepository, PgPool},
     server::{
         middleware::auth::{Claims, SECRET},
-        model::{auth::SigninPayload, users::UserResponse},
+        model::{
+            auth::{SigninPayload, SigninResponse},
+            users::UserResponse,
+        },
     },
     util::hash_password,
 };
@@ -12,15 +17,8 @@ use actix_web::{
     web::{Data, Json},
     HttpResponse,
 };
+use chrono::{Duration, Local, Timelike};
 use jsonwebtoken::{encode, EncodingKey, Header};
-use serde::Serialize;
-use std::env;
-
-#[derive(Serialize)]
-pub struct SigninResponse {
-    pub user: UserResponse,
-    pub token: String,
-}
 
 #[post("/auth/signin")]
 pub async fn handle_signin(
@@ -35,9 +33,9 @@ pub async fn handle_signin(
         .map_err(ErrorUnauthorized)?;
     let user = UserResponse::from_model(&user);
     let my_claims = Claims {
-        exp: 10000000000,
+        exp: Local::now().add(Duration::hours(24 * 7)).second() as usize,
         id: user.id,
-        role: "aiueo".to_string(),
+        role: todo!("aaa"),
     };
     let token = encode(
         &Header::default(),

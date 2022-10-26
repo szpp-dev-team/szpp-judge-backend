@@ -1,6 +1,3 @@
-#[macro_use]
-extern crate diesel;
-
 use crate::{
     gcs::Client,
     judge_runner::JudgeRunner,

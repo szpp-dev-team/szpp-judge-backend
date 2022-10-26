@@ -2,59 +2,118 @@ openapi: 3.0.3
 info:
   title: szpp-judge
   version: 1.0.0
-  
+
 paths:
-  /auth/signin:
+  /submits:
     post:
-      summary: サインイン
-      description: サインインをします
+      summary: 提出
+      description: 提出
       parameters: []
-      requestBody:  # リクエストボディ
+      requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SigninPayload'
+              $ref: '#/componets/schemas/SubmitPayload'
       responses:
         '200':
           description: 'OK'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SigninResponse'
+                $ref: '#/componets/schemas/SubmitResponse'
         '401':
-          description: 'ID かパスワードが違うよー'
+          description: '何かしらに失敗???'
         '500':
-          description: 'エラーだよー'
+          description: 'エラー'
+    
+    get:
+      summary: 提出内容の取得
+      description: 提出内容の取得
+      parameters: []
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/componets/schemas/SubmitResponse'
+        '401':
+          description: '何かしらに失敗???'
+        '500':
+          description: 'エラー'
+  /submits/{submit_id}:
+    get:
+      summary: 指定されたsubmit_idのsubmitをgetする
+      description: 指定されたsubmit_idのsubmitをgetする
+      parameters:
+        - name: submit_id
+          in: path
+          description: submit id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: unimplemented!()
+        '401':
+          description: unimplemented!()
+        '500':
+          description: unimplemented!()
 
-components:
+componets:
   schemas:
-    SigninPayload:
+    SubmitPayload:
       type: object
       required:  # 必須フィールド
-        - username
-        - password
+        - task_id
+        - contest_id
+        - language_id
+        - source_code
       properties:
-        username:
+        task_id:
+          type: integer
+        contest_id:
+          type: integer
+        language_id:
           type: string
-        password:
+        source_code:
           type: string
-  
-    SigninResponse:
+    
+    SubmitResponse:
       type: object
-      properties:
-        userResponse:
-          $ref: '#/components/schemas/UserResponse'
-        token:
-          type: string
-          
-    UserResponse:
-      type: object
+      required:  # 必須フィールド
+        - id
+        - status
+        - score
+        - execution_time
+        - execution_memory
+        - language_id
+        - user_id
+        - task_id
+        - contest_id
+        - source_code
+        - created_at
+        - updated_at
       properties:
         id:
           type: integer
-        username:
+        status:
           type: string
-        displayName:
+        score:
+          type: integer
+        execution_time:
+          type: integer
+        execution_memory:
+          type: integer
+        language_id:
+          type: string
+        user_id:
+          type: integer
+        task_id:
+          type: integer
+        contest_id:
+          type: integer
+        source_code:
           type: string
         created_at:
           type: string
@@ -62,8 +121,3 @@ components:
         updated_at:
           type: string
           format: datetime
-      required:
-        - id
-        - username
-        - created_at
-

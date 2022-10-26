@@ -1,16 +1,22 @@
+use std::sync::Arc;
+
 use crate::{
     db::{repository::task::TaskRepository, PgPool},
     server::{
         middleware::auth::Claims,
-        model::tasks::{TaskPayload, TaskResponse},
+        model::{
+            tasks::{TaskPayload, TaskResponse},
+            users::UserResponse,
+        },
     },
 };
 use actix_web::{
-    error::ErrorInternalServerError,
-    post, put,
+    error::{ErrorInternalServerError, ErrorNotFound},
+    get, post, put,
     web::{Data, Json, Path},
-    HttpResponse, get,
+    HttpResponse,
 };
+use diesel::result::Error as DieselError;
 use diesel::Connection;
 
 #[post("/tasks")]
@@ -61,8 +67,19 @@ pub async fn handle_update_task(
 #[get("/tasks/{task_id}")]
 pub async fn handle_get_task(
     _user: Claims,
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     task_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    unimplemented!()
+    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
+
+    let task = conn.fetch_task(*task_id).map_err(|e| {
+        if let DieselError::NotFound = e.downcast_ref::<DieselError>().unwrap() {
+            ErrorNotFound(e)
+        } else {
+            ErrorInternalServerError(e)
+        }
+    })?;
+
+    let task_resp = TaskResponse::from_model(&task);
+    Ok(HttpResponse::Ok().json(&task_resp))
 }

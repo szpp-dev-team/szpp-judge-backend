@@ -8,6 +8,7 @@ use diesel::{insert_into, prelude::*, update};
 pub trait TaskRepository {
     fn insert_task(&mut self, new_task: &NewTask) -> Result<Task>;
     fn update_task(&mut self, task_id: i32, new_task: &NewTask) -> Result<Task>;
+    fn fetch_task(&mut self, task_id: i32) -> Result<Task>;
 }
 
 impl TaskRepository for PgPooledConn {
@@ -37,6 +38,14 @@ impl TaskRepository for PgPooledConn {
                 updated_at.eq(chrono::Local::now().naive_local()),
                 contest_id.eq(&new_task.contest_id),
             ))
+            .get_result(self)?;
+        Ok(res)
+    }
+
+    fn fetch_task(&mut self, task_id: i32) -> Result<Task> {
+        use crate::schema::tasks;
+        let res = tasks::table
+            .filter(tasks::id.eq(task_id))
             .get_result(self)?;
         Ok(res)
     }

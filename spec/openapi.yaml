@@ -45,6 +45,28 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
         '500':
           description: 'エラーだよー'
+  
+  /users/{user_id}:
+    get:
+      summary: get user
+      description: ユーザー情報を取得する
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: 'ユーザーが見つからない'
+        '500':
+          description: 'エラーだよー'
 
 components:
   schemas:

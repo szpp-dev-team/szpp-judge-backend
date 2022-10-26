@@ -1,6 +1,18 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    contest_tasks (id) {
+        id -> Int4,
+        position -> Int4,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
+        contest_id -> Int4,
+        task_id -> Int4,
+    }
+}
+
+diesel::table! {
     contests (id) {
         id -> Int4,
         name -> Varchar,
@@ -52,7 +64,6 @@ diesel::table! {
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
-        contest_id -> Nullable<Int4>,
         author_id -> Int4,
     }
 }
@@ -104,10 +115,11 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(contest_tasks -> contests (contest_id));
+diesel::joinable!(contest_tasks -> tasks (task_id));
 diesel::joinable!(submits -> contests (contest_id));
 diesel::joinable!(submits -> tasks (task_id));
 diesel::joinable!(submits -> users (user_id));
-diesel::joinable!(tasks -> contests (contest_id));
 diesel::joinable!(tasks -> users (author_id));
 diesel::joinable!(testcase_sets -> tasks (task_id));
 diesel::joinable!(testcase_testcase_sets -> testcase_sets (testcase_set_id));
@@ -115,6 +127,7 @@ diesel::joinable!(testcase_testcase_sets -> testcases (testcase_id));
 diesel::joinable!(testcases -> tasks (task_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
+    contest_tasks,
     contests,
     submits,
     tasks,

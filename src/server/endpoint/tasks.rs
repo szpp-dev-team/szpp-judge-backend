@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::{
     db::{repository::task::TaskRepository, PgPool},
     server::{
@@ -65,7 +67,7 @@ pub async fn handle_update_task(
 #[get("/tasks/{task_id}")]
 pub async fn handle_get_task(
     _user: Claims,
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     task_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;

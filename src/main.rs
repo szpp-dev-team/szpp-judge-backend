@@ -14,7 +14,7 @@ use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use anyhow::Result;
 use db::new_pg_pool;
 use dotenv::dotenv;
-use server::endpoint::users::handle_register_user;
+use server::endpoint::{users::handle_register_user, tasks::handle_get_task};
 use std::{collections::VecDeque, env, sync::Arc};
 use tokio::sync::Mutex;
 
@@ -59,6 +59,7 @@ async fn main() -> Result<()> {
             .service(handle_register_testcases)
             .service(handle_register_testcase_sets)
             .service(handle_register_task)
+            .service(handle_get_task)
     })
     .bind(("0.0.0.0", PORT))?
     .workers(NUM_CPUS)

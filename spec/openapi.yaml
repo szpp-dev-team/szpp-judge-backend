@@ -2,14 +2,14 @@ openapi: 3.0.3
 info:
   title: szpp-judge
   version: 1.0.0
-  
+
 paths:
   /auth/signin:
     post:
       summary: サインイン
       description: サインインをします
       parameters: []
-      requestBody:  # リクエストボディ
+      requestBody: # リクエストボディ
         content:
           application/json:
             schema:
@@ -26,11 +26,31 @@ paths:
         '500':
           description: 'エラーだよー'
 
+  /users:
+    post:
+      summary: register user
+      description: 新規ユーザーを登録する
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserPayload'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '500':
+          description: 'エラーだよー'
+
 components:
   schemas:
     SigninPayload:
       type: object
-      required:  # 必須フィールド
+      required: # 必須フィールド
         - username
         - password
       properties:
@@ -38,7 +58,7 @@ components:
           type: string
         password:
           type: string
-  
+
     SigninResponse:
       type: object
       properties:
@@ -46,7 +66,7 @@ components:
           $ref: '#/components/schemas/UserResponse'
         token:
           type: string
-          
+
     UserResponse:
       type: object
       properties:
@@ -67,3 +87,16 @@ components:
         - username
         - created_at
 
+    RegisterUserPayload:
+      type: object
+      required:
+        - username
+        - password
+        - displayName
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        displayName:
+          type: string

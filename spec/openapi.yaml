@@ -2,14 +2,14 @@ openapi: 3.0.3
 info:
   title: szpp-judge
   version: 1.0.0
-  
+
 paths:
   /auth/signin:
     post:
       summary: サインイン
       description: サインインをします
       parameters: []
-      requestBody:  # リクエストボディ
+      requestBody: # リクエストボディ
         content:
           application/json:
             schema:
@@ -26,11 +26,34 @@ paths:
         '500':
           description: 'エラーだよー'
 
+  /contests/{contest_id}/tasks:
+    get:
+      summary: get contest tasks
+      description: コンテストに紐付くタスクの一覧を取得する
+      parameters:
+        - name: contest_id
+          in: path
+          description: コンテスト ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+        '500':
+          description: '内部エラー'
+
 components:
   schemas:
     SigninPayload:
       type: object
-      required:  # 必須フィールド
+      required: # 必須フィールド
         - username
         - password
       properties:
@@ -38,7 +61,7 @@ components:
           type: string
         password:
           type: string
-  
+
     SigninResponse:
       type: object
       properties:
@@ -46,7 +69,7 @@ components:
           $ref: '#/components/schemas/UserResponse'
         token:
           type: string
-          
+
     UserResponse:
       type: object
       properties:
@@ -67,3 +90,53 @@ components:
         - username
         - created_at
 
+    TaskResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        statement:
+          type: string
+        partScore:
+          type: string
+        constraints:
+          type: string
+        input:
+          type: string
+        output:
+          type: string
+        score:
+          type: integer
+        timeLimit:
+          type: integer
+        memoryLimit:
+          type: integer
+        taskType:
+          type: string
+        isDraft:
+          type: boolean
+        isPublic:
+          type: boolean
+        authorID:
+          type: integer
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - name
+        - statement
+        - constraints
+        - input
+        - output
+        - score
+        - timeLimit
+        - memoryLimit
+        - taskType
+        - isDraft
+        - isPublic
+        - authorID
+        - createdAt

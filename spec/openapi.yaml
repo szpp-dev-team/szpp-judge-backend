@@ -1,0 +1,69 @@
+openapi: 3.0.3
+info:
+  title: szpp-judge
+  version: 1.0.0
+  
+paths:
+  /auth/signin:
+    post:
+      summary: サインイン
+      description: サインインをします
+      parameters: []
+      requestBody:  # リクエストボディ
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SigninPayload'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SigninResponse'
+        '401':
+          description: 'ID かパスワードが違うよー'
+        '500':
+          description: 'エラーだよー'
+
+components:
+  schemas:
+    SigninPayload:
+      type: object
+      required:  # 必須フィールド
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+  
+    SigninResponse:
+      type: object
+      properties:
+        userResponse:
+          $ref: '#/components/schemas/UserResponse'
+        token:
+          type: string
+          
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        displayName:
+          type: string
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime
+      required:
+        - id
+        - username
+        - created_at
+

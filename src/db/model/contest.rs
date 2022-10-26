@@ -30,3 +30,14 @@ pub struct NewContest {
     pub penalty: i32,
     pub created_at: NaiveDateTime,
 }
+
+#[derive(Queryable, Identifiable)]
+pub struct ContestTask {
+    pub id: i32,
+    pub position: i32,
+    pub created_at: NaiveDateTime,
+    pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
+    pub contest_id: i32,
+    pub task_id: i32,
+}

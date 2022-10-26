@@ -1,5 +1,8 @@
 use crate::db::{
-    model::task::{NewTask, Task},
+    model::{
+        contest::{Contest, ContestTask},
+        task::{NewTask, Task},
+    },
     PgPooledConn,
 };
 use anyhow::Result;
@@ -9,6 +12,8 @@ pub trait TaskRepository {
     fn insert_task(&mut self, new_task: &NewTask) -> Result<Task>;
     fn update_task(&mut self, task_id: i32, new_task: &NewTask) -> Result<Task>;
     fn fetch_task(&mut self, task_id: i32) -> Result<Task>;
+    fn fetch_contest_tasks(&mut self, contest_id: i32)
+        -> Result<Vec<(ContestTask, Contest, Task)>>;
 }
 
 impl TaskRepository for PgPooledConn {
@@ -36,7 +41,6 @@ impl TaskRepository for PgPooledConn {
                 time_limit.eq(&new_task.time_limit),
                 memory_limit.eq(&new_task.memory_limit),
                 updated_at.eq(chrono::Local::now().naive_local()),
-                contest_id.eq(&new_task.contest_id),
             ))
             .get_result(self)?;
         Ok(res)
@@ -47,6 +51,19 @@ impl TaskRepository for PgPooledConn {
         let res = tasks::table
             .filter(tasks::id.eq(task_id))
             .get_result(self)?;
+        Ok(res)
+    }
+
+    fn fetch_contest_tasks(
+        &mut self,
+        contest_id2: i32,
+    ) -> Result<Vec<(ContestTask, Contest, Task)>> {
+        use crate::schema::{contest_tasks::dsl::*, contests, tasks};
+        let res = contest_tasks
+            .filter(contest_id.eq(contest_id2))
+            .inner_join(contests::table)
+            .inner_join(tasks::table)
+            .load(self)?;
         Ok(res)
     }
 }

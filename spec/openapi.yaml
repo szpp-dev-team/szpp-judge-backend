@@ -2,68 +2,175 @@ openapi: 3.0.3
 info:
   title: szpp-judge
   version: 1.0.0
-  
+
 paths:
-  /auth/signin:
+  /tasks:
     post:
-      summary: サインイン
-      description: サインインをします
+      summary: post task
+      description: post task
       parameters: []
-      requestBody:  # リクエストボディ
+      requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SigninPayload'
+              $ref: '#/componets/schemas/TaskPayload'
       responses:
         '200':
           description: 'OK'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SigninResponse'
+                $ref: '#/componets/schemas/TaskResponse'
         '401':
-          description: 'ID かパスワードが違うよー'
+          description: '何かしらに失敗???'
         '500':
-          description: 'エラーだよー'
+          description: 'エラー'
+  /tasks/{task_id}:
+    put:
+      summary: put tasks
+      description: put tasks
+      parameters:
+        - name: task_id
+          in: path
+          description: task id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/componets/schemas/TaskPayload'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/componets/schemas/TaskResponse'
+        '401':
+          description: '何かしらに失敗???'
+        '500':
+          description: 'エラー'
+    get:
+      summary: get tasks
+      description: get tasks
+      parameters:
+        - name: task_id
+          in: path
+          description: task id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/componets/schemas/TaskResponse'
+        '401':
+          description: '何かしらに失敗???'
+        '500':
+          description: 'エラー'
 
-components:
+componets:
   schemas:
-    SigninPayload:
+    TaskPayload:
       type: object
       required:  # 必須フィールド
-        - username
-        - password
+        - name
+        - statement
+        - part_score
+        - constraints
+        - input
+        - output
+        - score
+        - time_limit
+        - memory_limit
+        - task_type
+        - is_draft
+        - is_public
       properties:
-        username:
+        name:
           type: string
-        password:
+        statement:
           type: string
-  
-    SigninResponse:
+        part_score:
+          type: string
+        constraints:
+          type: string
+        input:
+          type: string
+        output:
+          type: string
+        score:
+          type: integer
+        time_limit:
+          type: integer
+        memory_limit:
+          type: integer
+        task_type:
+          type: string
+        is_draft:
+          type: boolean
+        is_public:
+          type: boolean
+    
+    TaskResponse:
       type: object
-      properties:
-        userResponse:
-          $ref: '#/components/schemas/UserResponse'
-        token:
-          type: string
-          
-    UserResponse:
-      type: object
+      required:  # 必須フィールド
+        - id
+        - name
+        - statement
+        - part_score
+        - constraints
+        - input
+        - output
+        - score
+        - time_limit
+        - memory_limit
+        - task_type
+        - is_draft
+        - is_public
+        - contest_id
+        - author_id
+        - created_at
+        - updated_at
       properties:
         id:
           type: integer
-        username:
+        name:
           type: string
-        displayName:
+        statement:
           type: string
+        part_score:
+          type: string
+        constraints:
+          type: string
+        input:
+          type: string
+        output:
+          type: string
+        score:
+          type: integer
+        time_limit:
+          type: integer
+        memory_limit:
+          type: integer
+        task_type:
+          type: string
+        is_draft:
+          type: boolean
+        is_public:
+          type: boolean
+        contest_id:
+          type: integer
+        author_id:
+          type: integer
         created_at:
           type: string
           format: datetime
         updated_at:
           type: string
           format: datetime
-      required:
-        - id
-        - username
-        - created_at
-

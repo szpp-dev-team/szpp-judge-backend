@@ -34,14 +34,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/componets/schemas/SubmitPayload'
+              $ref: '#/components/schemas/SubmitPayload'
       responses:
         '200':
           description: 'OK'
           content:
             application/json:
               schema:
-                $ref: '#/componets/schemas/SubmitResponse'
+                $ref: '#/components/schemas/SubmitResponse'
         '401':
           description: '何かしらに失敗???'
         '500':
@@ -57,7 +57,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/componets/schemas/SubmitResponse'
+                $ref: '#/components/schemas/SubmitResponse'
         '401':
           description: '何かしらに失敗???'
         '500':
@@ -75,13 +75,13 @@ paths:
             type: integer
       responses:
         '200':
-          description: unimplemented!()
-        '401':
-          description: unimplemented!()
-        '500':
-          description: unimplemented!()
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitResponse'
 
-componets:
+components:
   schemas:
     SigninPayload:
       type: object

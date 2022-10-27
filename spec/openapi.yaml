@@ -256,7 +256,7 @@ paths:
           description: '何かしらに失敗???'
         '500':
           description: 'エラー'
-  
+
   /submits:
     post:
       summary: 提出
@@ -312,6 +312,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubmitResponse'
+
+  /contests/{contest_id}/tasks:
+    get:
+      summary: get contest tasks
+      description: コンテストに紐付くタスクの一覧を取得する
+      parameters:
+        - name: contest_id
+          in: path
+          description: コンテスト ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+        '500':
+          description: '内部エラー'
 
 components:
   schemas:
@@ -490,23 +513,6 @@ components:
 
     TaskResponse:
       type: object
-      required: # 必須フィールド
-        - id
-        - name
-        - statement
-        - part_score
-        - constraints
-        - input
-        - output
-        - score
-        - time_limit
-        - memory_limit
-        - task_type
-        - is_draft
-        - is_public
-        - author_id
-        - created_at
-        - updated_at
       properties:
         id:
           type: integer
@@ -514,7 +520,7 @@ components:
           type: string
         statement:
           type: string
-        part_score:
+        partScore:
           type: string
         constraints:
           type: string
@@ -524,28 +530,41 @@ components:
           type: string
         score:
           type: integer
-        time_limit:
+        timeLimit:
           type: integer
-        memory_limit:
+        memoryLimit:
           type: integer
-        task_type:
+        taskType:
           type: string
-        is_draft:
+        isDraft:
           type: boolean
-        is_public:
+        isPublic:
           type: boolean
-        author_id:
+        authorID:
           type: integer
-        created_at:
+        createdAt:
           type: string
-          format: datetime
-        updated_at:
+        updatedAt:
           type: string
-          format: datetime
+      required:
+        - id
+        - name
+        - statement
+        - constraints
+        - input
+        - output
+        - score
+        - timeLimit
+        - memoryLimit
+        - taskType
+        - isDraft
+        - isPublic
+        - authorID
+        - createdAt
 
     SubmitPayload:
       type: object
-      required:  # 必須フィールド
+      required: # 必須フィールド
         - task_id
         - contest_id
         - language_id
@@ -562,7 +581,7 @@ components:
 
     SubmitResponse:
       type: object
-      required:  # 必須フィールド
+      required: # 必須フィールド
         - id
         - status
         - score

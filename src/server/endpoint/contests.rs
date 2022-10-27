@@ -1,8 +1,14 @@
 use std::sync::Arc;
 
 use crate::{
-    db::{repository::contest::ContestRepository, PgPool},
-    server::model::contests::{ContestPayload, ContestResponse},
+    db::{
+        repository::{contest::ContestRepository, task::TaskRepository},
+        PgPool,
+    },
+    server::model::{
+        contests::{ContestPayload, ContestResponse},
+        tasks::ContestTaskResponse,
+    },
 };
 use actix_web::{
     error::{ErrorInternalServerError, ErrorNotFound},
@@ -42,6 +48,24 @@ pub async fn handle_get_contest(
     })?;
     let contest_resp = ContestResponse::from_model(&contest);
     Ok(HttpResponse::Ok().json(&contest_resp))
+}
+
+#[get("/contests/{contest_id}/tasks")]
+pub async fn handle_get_contest_tasks(
+    contest_id: Path<i32>,
+    db_pool: Data<PgPool>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let mut db_conn = db_pool.get().map_err(ErrorInternalServerError)?;
+    let db_contest_tasks = db_conn
+        .fetch_contest_tasks(*contest_id)
+        .map_err(ErrorInternalServerError)?;
+    let contest_tasks = db_contest_tasks
+        .iter()
+        .map(|(contest_task, contest, task)| {
+            ContestTaskResponse::from_model(task, contest.id, contest_task.id)
+        })
+        .collect::<Vec<_>>();
+    Ok(HttpResponse::Ok().json(contest_tasks))
 }
 
 #[put("/contests/{contest_id}")]

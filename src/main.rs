@@ -8,10 +8,10 @@ use crate::{
 };
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use anyhow::Result;
-use cloud_storage::Client;
 use db::new_pg_pool;
 use dotenv::dotenv;
-use server::endpoint::{tasks::handle_get_task, users::handle_register_user};
+use gcs::Client;
+use server::endpoint::{tasks::handle_get_task, users::handle_register_user, testcases::{handle_get_testcases, handle_get_testcase}};
 use std::{collections::VecDeque, env, sync::Arc};
 use tokio::sync::Mutex;
 
@@ -57,6 +57,8 @@ async fn main() -> Result<()> {
             .service(handle_register_testcase_set)
             .service(handle_register_task)
             .service(handle_get_task)
+            .service(handle_get_testcases)
+            .service(handle_get_testcase)
     })
     .bind((
         "0.0.0.0",

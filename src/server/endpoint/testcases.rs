@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use crate::{
     db::{repository::testcase::TestcaseRepository, PgPool},
@@ -16,20 +16,19 @@ use tokio::runtime::Runtime;
 
 #[get("/tasks/{task_id}/testcases/{testcase_id}")]
 pub async fn handle_get_testcase(
-    db_pool: Data<PgPool>,
-    gcs_client: Data<Client>,
-    task_id: Path<i32>,
-    testcase_id: Path<i32>,
+    db_pool: Data<Arc<PgPool>>,
+    gcs_client: Data<Arc<Client>>,
+    params: Path<(i32, i32)>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
 
     let rt = Runtime::new().unwrap();
     let testcase_resp = conn
         .transaction(|conn| {
-            let testcase = conn.fetch_testcase(*testcase_id)?;
+            let testcase = conn.fetch_testcase(params.1)?;
             let (input, output) = rt.block_on(async {
                 let (input, output) = gcs_client
-                    .download_testcase(*task_id, &testcase.name)
+                    .download_testcase(params.0, &testcase.name)
                     .await?;
                 Ok::<_, anyhow::Error>((input, output))
             })?;
@@ -44,7 +43,7 @@ pub async fn handle_get_testcase(
 
 #[get("/tasks/{task_id}/testcases")]
 pub async fn handle_get_testcases(
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     task_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;

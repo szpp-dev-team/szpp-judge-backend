@@ -186,7 +186,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/TestcaseInfoResponse'
 
-/contests:
+  /contests:
     post:
       summary: post contests
       description: コンテストデータを作成します

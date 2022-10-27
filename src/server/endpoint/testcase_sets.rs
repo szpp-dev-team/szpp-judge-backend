@@ -38,12 +38,19 @@ pub async fn handle_link_testcase_sets(
 ) -> Result<HttpResponse, actix_web::Error> {
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
 
-    conn.transaction(|conn| {
-        conn.link_testcase_with_testcase_set(path.1, &data)?;
-        Ok::<_, anyhow::Error>(())
-    })
-    .map_err(ErrorInternalServerError)?;
-
-    // TODO: 何かしら返す
-    Ok(HttpResponse::Ok().finish())
+    let (testcase_sets, testcases): (Vec<_>, Vec<_>) = conn
+        .transaction(|conn| {
+            let res = conn.link_testcase_with_testcase_set(path.1, &data)?;
+            Ok::<_, anyhow::Error>(res)
+        })
+        .map_err(ErrorInternalServerError)?
+        .into_iter()
+        .map(|(_, testcase_set, testcase)| (testcase_set, testcase))
+        .unzip();
+    let testcase_ids = testcases
+        .iter()
+        .map(|testcase| testcase.id)
+        .collect::<Vec<_>>();
+    let resp = TestcaseSetResponse::from_model(&testcase_sets[0], Some(testcase_ids));
+    Ok(HttpResponse::Ok().json(resp))
 }

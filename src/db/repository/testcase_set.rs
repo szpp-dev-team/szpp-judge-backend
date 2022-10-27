@@ -1,9 +1,17 @@
-use crate::db::{
-    model::testcase_sets::{NewTestcaseSet, NewTestcaseTestcaseSet, TestcaseSet},
-    PgPooledConn,
+use crate::{
+    db::{
+        model::{
+            testcase::Testcase,
+            testcase_sets::{
+                NewTestcaseSet, NewTestcaseTestcaseSet, TestcaseSet, TestcaseTestcaseSet,
+            },
+        },
+        PgPooledConn,
+    },
+    schema::testcase_testcase_sets,
 };
 use anyhow::Result;
-use diesel::{insert_into, prelude::*};
+use diesel::{insert_into, prelude::*, ExpressionMethods};
 
 pub trait TestcaseSetRepository {
     fn insert_testcase_set(&mut self, new_testcase_set: &NewTestcaseSet) -> Result<TestcaseSet>;
@@ -11,7 +19,7 @@ pub trait TestcaseSetRepository {
         &mut self,
         testcase_set_id: i32,
         testcase_ids: &[i32],
-    ) -> Result<()>;
+    ) -> Result<Vec<(TestcaseTestcaseSet, TestcaseSet, Testcase)>>;
 }
 
 impl TestcaseSetRepository for PgPooledConn {
@@ -27,18 +35,24 @@ impl TestcaseSetRepository for PgPooledConn {
         &mut self,
         testcase_set_id: i32,
         testcase_ids: &[i32],
-    ) -> Result<()> {
-        use crate::schema::testcase_testcase_sets;
+    ) -> Result<Vec<(TestcaseTestcaseSet, TestcaseSet, Testcase)>> {
+        use crate::schema::{testcase_sets, testcase_testcase_sets::dsl, testcases};
         let list = testcase_ids
             .iter()
-            .map(|&id| NewTestcaseTestcaseSet {
-                testcase_id: id,
+            .map(|&id2| NewTestcaseTestcaseSet {
+                testcase_id: id2,
                 testcase_set_id,
             })
             .collect::<Vec<_>>();
-        insert_into(testcase_testcase_sets::table)
+        let res = insert_into(testcase_testcase_sets::table)
             .values(&list)
-            .execute(self)?;
-        Ok(())
+            .get_results::<TestcaseTestcaseSet>(self)?;
+        let testcase_set_ids = res.iter().map(|set| set.id).collect::<Vec<_>>();
+        let res = dsl::testcase_testcase_sets
+            .filter(dsl::id.eq_any(testcase_set_ids))
+            .inner_join(testcase_sets::table)
+            .inner_join(testcases::table)
+            .get_results::<(TestcaseTestcaseSet, TestcaseSet, Testcase)>(self)?;
+        Ok(res)
     }
 }

@@ -11,7 +11,7 @@ use actix_web::{
 use diesel::Connection;
 
 #[post("/tasks/{task_id}/testcase_sets")]
-pub async fn handle_register_testcase_sets(
+pub async fn handle_register_testcase_set(
     db_pool: Data<PgPool>,
     data: Json<TestcaseSetPayload>,
     task_id: Path<i32>,

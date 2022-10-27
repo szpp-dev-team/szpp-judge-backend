@@ -26,6 +26,70 @@ paths:
         '500':
           description: 'エラーだよー'
 
+  /tasks/{task_id}/testcase_sets:
+    parameters:
+      - name: task_id
+        in: path
+        description: タスクID
+        required: true
+        schema:
+          type: integer
+          format: int64
+    post:
+      summary: register testcase set
+      description: テストケースセットを作成する
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestcaseSetPayload'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestcaseSetResponse'
+        '400':
+          description: 'バリデーションエラー'
+        '500':
+          description: 'エラーだよー'
+
+  /tasks/{task_id}/testcase_sets/{testcase_set_id}:
+    parameters:
+      - name: task_id
+        in: path
+        description: タスクID
+        required: true
+        schema:
+          type: integer
+      - name: testcase_set_id
+        in: path
+        description: テストケースセットID
+        required: true
+        schema:
+          type: integer
+    post:
+      summary: link testcases with the testcase_set
+      description: テストケースとテストケースセットを紐付ける
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestcaseSetResponse'
+        '400':
+          description: 'バリデーションエラー'
+        '500':
+          description: 'エラーだよー'
   /users:
     post:
       summary: register user
@@ -161,6 +225,48 @@ components:
       required:
         - id
         - username
+        - created_at
+
+    TestcaseSetPayload:
+      type: object
+      properties:
+        name:
+          type: string
+        is_sample:
+          type: boolean
+        score:
+          type: integer
+      required:
+        - name
+        - is_sample
+        - score
+
+    TestcaseSetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        is_sample:
+          type: boolean
+        score:
+          type: integer
+        testcase_ids:
+          type: array
+          items:
+            type: integer
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime
+      required:
+        - id
+        - name
+        - is_sample
+        - score
         - created_at
 
     RegisterUserPayload:

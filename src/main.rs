@@ -1,14 +1,14 @@
 use crate::{
-    gcs::Client,
     judge_runner::JudgeRunner,
     server::endpoint::{
         contests::handle_get_contest, health_check::handle_check_health,
-        tasks::handle_register_task, testcase_sets::handle_register_testcase_sets,
-        users::handle_get_user,
+        tasks::handle_register_task, testcase_sets::handle_register_testcase_set,
+        testcases::handle_register_testcase, users::handle_get_user,
     },
 };
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use anyhow::Result;
+use cloud_storage::Client;
 use db::new_pg_pool;
 use dotenv::dotenv;
 use server::endpoint::{tasks::handle_get_task, users::handle_register_user};
@@ -22,7 +22,7 @@ mod schema;
 mod server;
 mod util;
 
-const PORT: u16 = 8080;
+const PORT: &str = "8080";
 const NUM_CPUS: usize = 4;
 const JUDGE_THREAD_NUM: usize = 5;
 const QUEUE_CAPACITY: usize = 100_000;
@@ -53,11 +53,17 @@ async fn main() -> Result<()> {
             .service(handle_get_user)
             .service(handle_check_health)
             .service(handle_get_contest)
-            .service(handle_register_testcase_sets)
+            .service(handle_register_testcase)
+            .service(handle_register_testcase_set)
             .service(handle_register_task)
             .service(handle_get_task)
     })
-    .bind(("0.0.0.0", PORT))?
+    .bind((
+        "0.0.0.0",
+        env::var("PORT")
+            .unwrap_or_else(|_| PORT.to_string())
+            .parse()?,
+    ))?
     .workers(NUM_CPUS)
     .run()
     .await?;

@@ -34,14 +34,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/componets/schemas/TaskPayload'
+              $ref: '#/components/schemas/TaskPayload'
       responses:
         '200':
           description: 'OK'
           content:
             application/json:
               schema:
-                $ref: '#/componets/schemas/TaskResponse'
+                $ref: '#/components/schemas/TaskResponse'
         '401':
           description: '何かしらに失敗???'
         '500':
@@ -61,14 +61,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/componets/schemas/TaskPayload'
+              $ref: '#/components/schemas/TaskPayload'
       responses:
         '200':
           description: 'OK'
           content:
             application/json:
               schema:
-                $ref: '#/componets/schemas/TaskResponse'
+                $ref: '#/components/schemas/TaskResponse'
         '401':
           description: '何かしらに失敗???'
         '500':
@@ -89,13 +89,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/componets/schemas/TaskResponse'
+                $ref: '#/components/schemas/TaskResponse'
         '401':
           description: '何かしらに失敗???'
         '500':
           description: 'エラー'
 
-componets:
+components:
   schemas:
     SigninPayload:
       type: object

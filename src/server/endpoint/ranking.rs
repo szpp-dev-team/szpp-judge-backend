@@ -97,8 +97,16 @@ pub async fn handle_get_ranking(
                 submit_ids: penarty_tuple.0.clone(),
             };
 
-            all_score += each_task.score;
-            all_duration += each_task.duration;
+            let mut w_score = 0;
+            let mut w_duration = 0;
+
+            if penarty_tuple.1 {
+                w_score = 1;
+                w_duration = 1;
+            }
+
+            all_score += each_task.score * w_score;
+            all_duration += each_task.duration * w_duration;
             all_penarty_cnt += each_task.penarty_count;
             user_progress.push(each_task);
         }

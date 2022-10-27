@@ -21,7 +21,6 @@ pub struct Task {
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,
-    pub contest_id: Option<i32>,
     pub author_id: i32,
 }
 
@@ -41,6 +40,5 @@ pub struct NewTask {
     pub is_draft: bool,
     pub is_public: bool,
     pub created_at: NaiveDateTime,
-    pub contest_id: Option<i32>,
     pub author_id: i32,
 }

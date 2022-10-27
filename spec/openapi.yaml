@@ -192,7 +192,6 @@ componets:
         - task_type
         - is_draft
         - is_public
-        - contest_id
         - author_id
         - created_at
         - updated_at
@@ -223,8 +222,6 @@ componets:
           type: boolean
         is_public:
           type: boolean
-        contest_id:
-          type: integer
         author_id:
           type: integer
         created_at:

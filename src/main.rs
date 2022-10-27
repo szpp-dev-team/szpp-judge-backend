@@ -3,7 +3,7 @@ use crate::{
     judge_runner::JudgeRunner,
     server::endpoint::{
         contests::handle_get_contest, health_check::handle_check_health,
-        tasks::handle_register_task, testcase_sets::handle_register_testcase_sets,
+        tasks::handle_register_task, testcase_sets::handle_register_testcase_set,
         testcases::handle_register_testcases, users::handle_get_user,
     },
 };
@@ -54,7 +54,7 @@ async fn main() -> Result<()> {
             .service(handle_check_health)
             .service(handle_get_contest)
             .service(handle_register_testcases)
-            .service(handle_register_testcase_sets)
+            .service(handle_register_testcase_set)
             .service(handle_register_task)
             .service(handle_get_task)
     })

@@ -26,6 +26,293 @@ paths:
         '500':
           description: 'エラーだよー'
 
+  /tasks/{task_id}/testcase_sets:
+    parameters:
+      - name: task_id
+        in: path
+        description: タスクID
+        required: true
+        schema:
+          type: integer
+          format: int64
+    post:
+      summary: register testcase set
+      description: テストケースセットを作成する
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestcaseSetPayload'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestcaseSetResponse'
+        '400':
+          description: 'バリデーションエラー'
+        '500':
+          description: 'エラーだよー'
+
+  /tasks/{task_id}/testcase_sets/{testcase_set_id}:
+    parameters:
+      - name: task_id
+        in: path
+        description: タスクID
+        required: true
+        schema:
+          type: integer
+      - name: testcase_set_id
+        in: path
+        description: テストケースセットID
+        required: true
+        schema:
+          type: integer
+    post:
+      summary: link testcases with the testcase_set
+      description: テストケースとテストケースセットを紐付ける
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestcaseSetResponse'
+        '400':
+          description: 'バリデーションエラー'
+        '500':
+          description: 'エラーだよー'
+  /users:
+    post:
+      summary: register user
+      description: 新規ユーザーを登録する
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserPayload'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '500':
+          description: 'エラーだよー'
+
+  /users/{user_id}:
+    get:
+      summary: get user
+      description: ユーザー情報を取得する
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: 'ユーザーが見つからない'
+        '500':
+          description: 'エラーだよー'
+
+  /tasks/{task_id}/testcases/{testcase_id}:
+    get:
+      summary: get specify testcase
+      description: テストケースの詳細を取得する
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: testcase_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestcaseResponse'
+
+  /tasks/{task_id}/testcases:
+    parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      summary: register new testcase
+      description: 問題にテストケースを追加する
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestcaseResponse'
+
+    get:
+      summary: get testcases
+      description: 問題に紐づくテストケースの一覧を取得する
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TestcaseInfoResponse'
+
+  /tasks:
+    post:
+      summary: post task
+      description: post task
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskPayload'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '401':
+          description: '何かしらに失敗???'
+        '500':
+          description: 'エラー'
+
+  /tasks/{task_id}:
+    put:
+      summary: put tasks
+      description: put tasks
+      parameters:
+        - name: task_id
+          in: path
+          description: task id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskPayload'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '401':
+          description: '何かしらに失敗???'
+        '500':
+          description: 'エラー'
+    get:
+      summary: get tasks
+      description: get tasks
+      parameters:
+        - name: task_id
+          in: path
+          description: task id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '401':
+          description: '何かしらに失敗???'
+        '500':
+          description: 'エラー'
+
+  /submits:
+    post:
+      summary: 提出
+      description: 提出
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitPayload'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitResponse'
+        '401':
+          description: '何かしらに失敗???'
+        '500':
+          description: 'エラー'
+
+    get:
+      summary: 提出内容の取得
+      description: 提出内容の取得
+      parameters: []
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitResponse'
+        '401':
+          description: '何かしらに失敗???'
+        '500':
+          description: 'エラー'
+  /submits/{submit_id}:
+    get:
+      summary: 指定されたsubmit_idのsubmitをgetする
+      description: 指定されたsubmit_idのsubmitをgetする
+      parameters:
+        - name: submit_id
+          in: path
+          description: submit id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitResponse'
+
   /contests/{contest_id}/tasks:
     get:
       summary: get contest tasks
@@ -90,6 +377,140 @@ components:
         - username
         - created_at
 
+    TestcaseSetPayload:
+      type: object
+      properties:
+        name:
+          type: string
+        is_sample:
+          type: boolean
+        score:
+          type: integer
+      required:
+        - name
+        - is_sample
+        - score
+
+    TestcaseSetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        is_sample:
+          type: boolean
+        score:
+          type: integer
+        testcase_ids:
+          type: array
+          items:
+            type: integer
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime
+      required:
+        - id
+        - name
+        - is_sample
+        - score
+        - created_at
+
+    RegisterUserPayload:
+      type: object
+      required:
+        - username
+        - password
+        - displayName
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        displayName:
+          type: string
+
+    TestcaseResponse:
+      type: object
+      required:
+        - id
+        - name
+        - task_id
+        - input
+        - output
+        - created_at
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        task_id:
+          type: integer
+        input:
+          type: string
+        output:
+          type: string
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime
+
+    TestcaseInfoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        task_id:
+          type: integer
+
+    TaskPayload:
+      type: object
+      required: # 必須フィールド
+        - name
+        - statement
+        - part_score
+        - constraints
+        - input
+        - output
+        - score
+        - time_limit
+        - memory_limit
+        - task_type
+        - is_draft
+        - is_public
+      properties:
+        name:
+          type: string
+        statement:
+          type: string
+        part_score:
+          type: string
+        constraints:
+          type: string
+        input:
+          type: string
+        output:
+          type: string
+        score:
+          type: integer
+        time_limit:
+          type: integer
+        memory_limit:
+          type: integer
+        task_type:
+          type: string
+        is_draft:
+          type: boolean
+        is_public:
+          type: boolean
+
     TaskResponse:
       type: object
       properties:
@@ -140,3 +561,63 @@ components:
         - isPublic
         - authorID
         - createdAt
+
+    SubmitPayload:
+      type: object
+      required: # 必須フィールド
+        - task_id
+        - contest_id
+        - language_id
+        - source_code
+      properties:
+        task_id:
+          type: integer
+        contest_id:
+          type: integer
+        language_id:
+          type: string
+        source_code:
+          type: string
+
+    SubmitResponse:
+      type: object
+      required: # 必須フィールド
+        - id
+        - status
+        - score
+        - execution_time
+        - execution_memory
+        - language_id
+        - user_id
+        - task_id
+        - contest_id
+        - source_code
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+        score:
+          type: integer
+        execution_time:
+          type: integer
+        execution_memory:
+          type: integer
+        language_id:
+          type: string
+        user_id:
+          type: integer
+        task_id:
+          type: integer
+        contest_id:
+          type: integer
+        source_code:
+          type: string
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime

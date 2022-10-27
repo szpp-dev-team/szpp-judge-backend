@@ -4,14 +4,14 @@ use crate::{
     server::endpoint::{
         contests::handle_get_contest, health_check::handle_check_health,
         tasks::handle_register_task, testcase_sets::handle_register_testcase_sets,
-        testcases::handle_register_testcases, users::handle_get_user,
+        users::handle_get_user,
     },
 };
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use anyhow::Result;
 use db::new_pg_pool;
 use dotenv::dotenv;
-use server::endpoint::{users::handle_register_user, tasks::handle_get_task};
+use server::endpoint::{tasks::handle_get_task, users::handle_register_user};
 use std::{collections::VecDeque, env, sync::Arc};
 use tokio::sync::Mutex;
 
@@ -53,7 +53,6 @@ async fn main() -> Result<()> {
             .service(handle_get_user)
             .service(handle_check_health)
             .service(handle_get_contest)
-            .service(handle_register_testcases)
             .service(handle_register_testcase_sets)
             .service(handle_register_task)
             .service(handle_get_task)

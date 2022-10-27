@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::{
     db::{repository::contest::ContestRepository, PgPool},
     server::model::contests::{ContestPayload, ContestResponse},
@@ -28,7 +30,7 @@ pub async fn handle_register_contest(
 #[get("/contests/{contest_id}")]
 pub async fn handle_get_contest(
     path: Path<i32>,
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
     let contest = conn.fetch_contest_by_id(*path).map_err(|e| {

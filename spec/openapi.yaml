@@ -45,7 +45,7 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
         '500':
           description: 'エラーだよー'
-  
+
   /users/{user_id}:
     get:
       summary: get user
@@ -67,6 +67,60 @@ paths:
           description: 'ユーザーが見つからない'
         '500':
           description: 'エラーだよー'
+
+  /tasks/{task_id}/testcases/{testcase_id}:
+    get:
+      summary: get specify testcase
+      description: テストケースの詳細を取得する
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: testcase_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestcaseResponse'
+
+  /tasks/{task_id}/testcases:
+    parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      summary: register new testcase
+      description: 問題にテストケースを追加する
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestcaseResponse'
+
+    get:
+      summary: get testcases
+      description: 問題に紐づくテストケースの一覧を取得する
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TestcaseInfoResponse'
 
 components:
   schemas:
@@ -122,3 +176,40 @@ components:
           type: string
         displayName:
           type: string
+
+    TestcaseResponse:
+      type: object
+      required:
+        - id
+        - name
+        - task_id
+        - input
+        - output
+        - created_at
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        task_id:
+          type: integer
+        input:
+          type: string
+        output:
+          type: string
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime
+
+    TestcaseInfoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        task_id:
+          type: integer

@@ -186,6 +186,77 @@ paths:
                 items:
                   $ref: '#/components/schemas/TestcaseInfoResponse'
 
+/contests:
+    post:
+      summary: post contests
+      description: コンテストデータを作成します
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContestPayload'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContestResponse'
+        '401':
+          description: '何かしらのエラー?'
+        '500':
+          description: 'エラー'
+
+  /contests/{contest_id}:
+    get:
+      summary: get contests_id
+      description: contest_idを取得します
+      parameters:
+        - name: contest_id
+          in: path
+          description: contest id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContestResponse'
+        '401':
+          description: '何かしらの失敗?'
+        '500':
+          description: 'エラー'
+    put:
+      summary: put contests_id
+      description: contestのデータをputします
+      parameters:
+        - name: contest_id
+          in: path
+          description: contest id
+          required: true
+          schema:
+            type: integer
+      requestBody:  # リクエストボディ
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContestPayload'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContestResponse'
+        '401':
+          description: '何かしらの失敗?'
+        '500':
+          description: 'エラー'
+
 components:
   schemas:
     SigninPayload:
@@ -319,3 +390,70 @@ components:
           type: string
         task_id:
           type: integer
+
+    ContestPayload:
+      type: object
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        start_time:
+          type: string
+          format: datetime
+        end_time:
+          type: string
+          format: datetime
+        penalty:
+          type: integer
+      required:
+        - name
+        - slug
+        - category
+        - description
+        - start_time
+        - end_time
+        - penalty
+
+    ContestResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        start_at:
+          type: string
+          format: datetime
+        end_at:
+          type: string
+          format: datetime
+        penalty:
+          type: integer
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime
+      required:
+        - id
+        - name
+        - slug
+        - category
+        - description
+        - start_time
+        - end_time
+        - penalty
+        - created_at
+        - updated_at

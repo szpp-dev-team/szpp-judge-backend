@@ -256,6 +256,62 @@ paths:
           description: '何かしらに失敗???'
         '500':
           description: 'エラー'
+  
+  /submits:
+    post:
+      summary: 提出
+      description: 提出
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitPayload'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitResponse'
+        '401':
+          description: '何かしらに失敗???'
+        '500':
+          description: 'エラー'
+
+    get:
+      summary: 提出内容の取得
+      description: 提出内容の取得
+      parameters: []
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitResponse'
+        '401':
+          description: '何かしらに失敗???'
+        '500':
+          description: 'エラー'
+  /submits/{submit_id}:
+    get:
+      summary: 指定されたsubmit_idのsubmitをgetする
+      description: 指定されたsubmit_idのsubmitをgetする
+      parameters:
+        - name: submit_id
+          in: path
+          description: submit id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitResponse'
 
 components:
   schemas:
@@ -480,6 +536,66 @@ components:
           type: boolean
         author_id:
           type: integer
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime
+
+    SubmitPayload:
+      type: object
+      required:  # 必須フィールド
+        - task_id
+        - contest_id
+        - language_id
+        - source_code
+      properties:
+        task_id:
+          type: integer
+        contest_id:
+          type: integer
+        language_id:
+          type: string
+        source_code:
+          type: string
+
+    SubmitResponse:
+      type: object
+      required:  # 必須フィールド
+        - id
+        - status
+        - score
+        - execution_time
+        - execution_memory
+        - language_id
+        - user_id
+        - task_id
+        - contest_id
+        - source_code
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+        score:
+          type: integer
+        execution_time:
+          type: integer
+        execution_memory:
+          type: integer
+        language_id:
+          type: string
+        user_id:
+          type: integer
+        task_id:
+          type: integer
+        contest_id:
+          type: integer
+        source_code:
+          type: string
         created_at:
           type: string
           format: datetime

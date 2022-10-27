@@ -36,7 +36,6 @@ impl TaskRepository for PgPooledConn {
                 time_limit.eq(&new_task.time_limit),
                 memory_limit.eq(&new_task.memory_limit),
                 updated_at.eq(chrono::Local::now().naive_local()),
-                contest_id.eq(&new_task.contest_id),
             ))
             .get_result(self)?;
         Ok(res)

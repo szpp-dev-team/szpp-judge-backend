@@ -1,10 +1,13 @@
+use std::sync::Arc;
+
 use actix_web::{
-    error::ErrorInternalServerError,
+    error::{ErrorInternalServerError, ErrorNotFound},
     get, post,
     web::{Data, Json, Path},
     HttpResponse,
 };
 use diesel::Connection;
+use diesel::result::Error as DieselError;
 
 use crate::{
     db::{
@@ -80,8 +83,19 @@ pub async fn handle_get_submits(
 #[get("/submits/{submit_id}")]
 pub async fn handle_get_submit(
     _user: Claims,
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     submit_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    unimplemented!()
+    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
+
+    let submit = conn.fetch_submit_by_id(*submit_id).map_err(|e| {
+        if let DieselError::NotFound = e.downcast_ref::<DieselError>().unwrap() {
+            ErrorNotFound(e)
+        } else {
+            ErrorInternalServerError(e)
+        }
+    })?;
+
+    let submit_resp = SubmitResponse::from_model(&submit);
+    Ok(HttpResponse::Ok().json(&submit_resp))
 }

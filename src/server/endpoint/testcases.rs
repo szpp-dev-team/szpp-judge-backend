@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use crate::{
     db::{repository::testcase::TestcaseRepository, PgPool},
@@ -6,7 +6,6 @@ use crate::{
     server::model::testcases::{TestcaseInfoResponse, TestcasePayload, TestcaseResponse},
 };
 use actix_web::{
-    delete,
     error::ErrorInternalServerError,
     get, post,
     web::{Data, Json, Path},
@@ -17,20 +16,19 @@ use tokio::runtime::Runtime;
 
 #[get("/tasks/{task_id}/testcases/{testcase_id}")]
 pub async fn handle_get_testcase(
-    db_pool: Data<PgPool>,
-    gcs_client: Data<Client>,
-    task_id: Path<i32>,
-    testcase_id: Path<i32>,
+    db_pool: Data<Arc<PgPool>>,
+    gcs_client: Data<Arc<Client>>,
+    params: Path<(i32, i32)>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
 
     let rt = Runtime::new().unwrap();
     let testcase_resp = conn
         .transaction(|conn| {
-            let testcase = conn.fetch_testcase(*testcase_id)?;
+            let testcase = conn.fetch_testcase(params.1)?;
             let (input, output) = rt.block_on(async {
                 let (input, output) = gcs_client
-                    .download_testcase(*task_id, &testcase.name)
+                    .download_testcase(params.0, &testcase.name)
                     .await?;
                 Ok::<_, anyhow::Error>((input, output))
             })?;
@@ -45,7 +43,7 @@ pub async fn handle_get_testcase(
 
 #[get("/tasks/{task_id}/testcases")]
 pub async fn handle_get_testcases(
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     task_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
@@ -60,7 +58,7 @@ pub async fn handle_get_testcases(
 
     let testcases_resp = mp
         .iter()
-        .map(|(testcase, testcase_set)| TestcaseInfoResponse::from_model(testcase, testcase_set))
+        .map(|(testcase, _testcase_set)| TestcaseInfoResponse::from_model(testcase))
         .collect::<Vec<_>>();
     Ok(HttpResponse::Ok().json(&testcases_resp))
 }
@@ -95,72 +93,4 @@ pub async fn handle_register_testcase(
         data.output.bytes().collect(),
     );
     Ok(HttpResponse::Ok().json(&testcase_resp))
-}
-
-#[post("/tasks/{task_id}/testcases")]
-pub async fn handle_register_testcases(
-    db_pool: Data<PgPool>,
-    gcs_client: Data<Client>,
-    data: Json<Vec<TestcasePayload>>,
-    task_id: Path<i32>,
-) -> Result<HttpResponse, actix_web::Error> {
-    let new_testcases = data
-        .iter()
-        .map(|t| t.to_model(*task_id))
-        .collect::<Vec<_>>();
-    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
-
-    let rt = Runtime::new().map_err(ErrorInternalServerError)?;
-    let testcases = conn
-        .transaction(|conn| {
-            let testcases = conn.insert_testcases(&new_testcases)?;
-            rt.block_on(async {
-                for (testcase, data) in testcases.iter().zip(data.iter()) {
-                    gcs_client
-                        .upload_testcase(testcase.id, &testcase.name, &data.input, &data.output)
-                        .await?;
-                }
-                Ok::<_, anyhow::Error>(())
-            })?;
-            Ok::<_, anyhow::Error>(testcases)
-        })
-        .map_err(ErrorInternalServerError)?;
-
-    let testcases_resp = testcases
-        .iter()
-        .map(|testcase| TestcaseInfoResponse::from_model(testcase, &[]))
-        .collect::<Vec<_>>();
-    Ok(HttpResponse::Ok().json(&testcases_resp))
-}
-
-#[delete("/tasks/{task_id}/testcases")]
-pub async fn handle_delete_testcases(
-    db_pool: Data<PgPool>,
-    gcs_client: Data<Client>,
-    data: Json<Vec<i32>>,
-    task_id: Path<i32>,
-) -> Result<HttpResponse, actix_web::Error> {
-    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
-
-    let rt = Runtime::new().map_err(ErrorInternalServerError)?;
-    let testcases = conn
-        .transaction(|conn| {
-            let testcases = conn.delete_testcases(*task_id, &data)?;
-            rt.block_on(async {
-                for testcase in &testcases {
-                    gcs_client
-                        .remove_testcase(testcase.task_id, &testcase.name)
-                        .await?;
-                }
-                Ok::<_, anyhow::Error>(())
-            })?;
-            Ok::<_, anyhow::Error>(testcases)
-        })
-        .map_err(ErrorInternalServerError)?;
-
-    let testcases_resp = testcases
-        .iter()
-        .map(|testcase| TestcaseInfoResponse::from_model(testcase, &[]))
-        .collect::<Vec<_>>();
-    Ok(HttpResponse::Ok().json(&testcases_resp))
 }

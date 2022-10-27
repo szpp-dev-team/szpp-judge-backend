@@ -28,7 +28,7 @@ FROM tasks
 WHERE id = 1;
 INSERT INTO tasks (id, name, statement, constraints, part_score, input, output, score, time_limit, memory_limit,
                    task_type,
-                   is_draft, is_public, created_at, contest_id, author_id)
+                   is_draft, is_public, created_at, author_id)
 VALUES (1, 'Simple Adding',
         E'整数 $A$, $B$ が与えられます。\n$A + B$ を求めてください。',
         E'- $0 \leq A, \ B \leq 10^{10^5}$',
@@ -46,7 +46,6 @@ A B
         false,
         true,
         now(),
-        1,
         1);
 
 DELETE
@@ -69,7 +68,8 @@ VALUES (3, 'sample3.txt',
 
 DELETE
 FROM testcase_sets
-WHERE id = 1 OR id = 2;
+WHERE id = 1
+   OR id = 2;
 INSERT INTO testcase_sets (id, name, is_sample, score, created_at, task_id)
 VALUES (1, 'sample', true, 0, now(), 1);
 INSERT INTO testcase_sets (id, name, is_sample, score, created_at, task_id)
@@ -95,3 +95,21 @@ INSERT INTO testcase_testcase_sets (id, created_at, testcase_id, testcase_set_id
 VALUES (5, now(), 2, 2);
 INSERT INTO testcase_testcase_sets (id, created_at, testcase_id, testcase_set_id)
 VALUES (6, now(), 3, 2);
+
+DELETE
+FROM submits
+WHERE id = 1
+   OR id = 2
+   OR id = 3
+   OR id = 4
+   OR id = 5;
+INSERT INTO submits (id, created_at, user_id, task_id, contest_id, status, language_id)
+VALUES (1, now(), 1, 1, 1, 'WJ', 'cpp');
+INSERT INTO submits (id, created_at, user_id, task_id, contest_id, status, language_id)
+VALUES (2, now(), 1, 1, 1, 'WJ', 'cpp');
+INSERT INTO submits (id, created_at, user_id, task_id, contest_id, status, language_id)
+VALUES (3, now(), 1, 1, 1, 'WJ', 'cpp');
+INSERT INTO submits (id, created_at, user_id, task_id, contest_id, status, language_id)
+VALUES (4, now(), 1, 1, 1, 'WJ', 'cpp');
+INSERT INTO submits (id, created_at, user_id, task_id, contest_id, status, language_id)
+VALUES (5, now(), 1, 1, 1, 'WJ', 'cpp');

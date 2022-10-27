@@ -8,7 +8,6 @@ pub struct TestcaseSetPayload {
     pub name: String,
     pub is_sample: bool,
     pub score: i32,
-    pub created_at: NaiveDateTime,
 }
 
 impl TestcaseSetPayload {
@@ -31,6 +30,7 @@ pub struct TestcaseSetResponse {
     pub score: i32,
     pub testcase_ids: Option<Vec<i32>>,
     pub created_at: NaiveDateTime,
+    pub updated_at: Option<NaiveDateTime>,
 }
 
 impl TestcaseSetResponse {
@@ -42,6 +42,7 @@ impl TestcaseSetResponse {
             score: testcase_set.score,
             testcase_ids,
             created_at: testcase_set.created_at,
+            updated_at: testcase_set.updated_at,
         }
     }
 }

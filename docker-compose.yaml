@@ -11,7 +11,7 @@ services:
   db:
     image: postgres:14
     volumes:
-      - $PWD/postgres_data:/var/lib/postgresql/data
+      - $PWD/postgres_data:/var/lib/postgresql
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root

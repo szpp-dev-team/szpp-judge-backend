@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use actix_web::{
     error::{ErrorInternalServerError, ErrorNotFound},
     get, post,
@@ -81,7 +83,7 @@ pub async fn handle_get_submits(
 #[get("/submits/{submit_id}")]
 pub async fn handle_get_submit(
     _user: Claims,
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     submit_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;

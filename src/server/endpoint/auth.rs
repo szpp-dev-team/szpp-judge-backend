@@ -1,4 +1,4 @@
-use std::ops::Add;
+use std::{ops::Add, sync::Arc};
 
 use crate::{
     db::{repository::auth::AuthRepository, PgPool},
@@ -17,12 +17,12 @@ use actix_web::{
     web::{Data, Json},
     HttpResponse,
 };
-use chrono::{Duration, Local, Timelike};
+use chrono::{Duration, Local};
 use jsonwebtoken::{encode, EncodingKey, Header};
 
 #[post("/auth/signin")]
 pub async fn handle_signin(
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     data: Json<SigninPayload>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let password = &data.password;
@@ -35,7 +35,7 @@ pub async fn handle_signin(
     let my_claims = Claims {
         exp: Local::now().add(Duration::hours(24 * 7)).timestamp() as usize,
         id: user.id,
-        role: todo!("aaa"),
+        role: "general".to_string(),
     };
     let token = encode(
         &Header::default(),

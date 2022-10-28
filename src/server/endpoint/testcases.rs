@@ -73,19 +73,17 @@ pub async fn handle_register_testcase(
     let new_testcase = data.to_model(*task_id);
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
 
-    let rt = Runtime::new().map_err(ErrorInternalServerError)?;
     let testcase = conn
         .transaction(|conn| {
             let testcase = conn.insert_testcase(&new_testcase)?;
-            rt.block_on(async {
-                let bytes = gcs_client
-                    .upload_testcase(testcase.id, &testcase.name, &data.input, &data.output)
-                    .await?;
-                Ok::<_, anyhow::Error>(bytes)
-            })?;
             Ok::<_, anyhow::Error>(testcase)
         })
         .map_err(ErrorInternalServerError)?;
+
+    let _bytes = gcs_client
+        .upload_testcase(*task_id, &testcase.name, &data.input, &data.output)
+        .await
+        .map_err(ErrorInternalServerError);
 
     let testcase_resp = TestcaseResponse::from_model(
         &testcase,

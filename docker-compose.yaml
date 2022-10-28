@@ -18,3 +18,14 @@ services:
       - POSTGRES_DB=szpp-judge
     ports:
       - 5432:5432
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    environment:
+      - SWAGGER_URL=
+      - SWAGGER_JSON=./spec/openapi.yaml
+    ports:
+      - 80:8080
+    volumes:
+      - ./spec:/spec

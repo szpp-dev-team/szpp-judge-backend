@@ -1,5 +1,5 @@
 use crate::schema::*;
-use chrono::NaiveDateTime;
+use chrono::{Local, NaiveDateTime};
 use diesel::{Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 
@@ -19,6 +19,24 @@ pub struct Submit {
     pub user_id: i32,
     pub task_id: i32,
     pub contest_id: i32,
+}
+
+impl Submit {
+    pub fn update(
+        &mut self,
+        status: &str,
+        compile_message: Option<String>,
+        execution_memory: i32,
+        execution_time: i32,
+        score: i32,
+    ) {
+        self.status = status.to_string();
+        self.compile_message = compile_message;
+        self.execution_memory = Some(execution_memory);
+        self.execution_time = Some(execution_time);
+        self.score = Some(score);
+        self.updated_at = Some(Local::now().naive_local());
+    }
 }
 
 #[derive(Insertable)]

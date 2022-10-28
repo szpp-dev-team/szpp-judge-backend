@@ -1,7 +1,8 @@
 use serde::Serialize;
 
 #[derive(Serialize)]
-pub struct TaskInfo{
+#[serde(rename_all = "camelCase")]
+pub struct TaskInfo {
     pub task_id: i32,
     pub score: i32,
     pub duration: i32,
@@ -9,18 +10,20 @@ pub struct TaskInfo{
     pub submit_ids: Vec<i32>,
 }
 #[derive(Serialize)]
-pub struct RankInfo{
+#[serde(rename_all = "camelCase")]
+pub struct RankInfo {
     pub rank: i32,
     pub user_id: i32,
     pub username: String,
     pub score: i32,
-    pub duration: i32,  // ペナルティ込み
+    pub duration: i32, // ペナルティ込み
     pub penarty_count: i32,
     pub task_info_list: Vec<TaskInfo>,
 }
 
 #[derive(Serialize)]
-pub struct RankingResponse{
+#[serde(rename_all = "camelCase")]
+pub struct RankingResponse {
     pub rank_info_list: Vec<RankInfo>,
 }
 

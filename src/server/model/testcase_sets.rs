@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::db::model::testcase_sets::{NewTestcaseSet, TestcaseSet};
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TestcaseSetPayload {
     pub name: String,
     pub is_sample: bool,
@@ -23,6 +24,7 @@ impl TestcaseSetPayload {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TestcaseSetResponse {
     pub id: i32,
     pub name: String,

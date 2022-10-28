@@ -1,9 +1,9 @@
+use crate::db::model::contest::{Contest, NewContest};
 use chrono::{NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::db::model::contest::{Contest, NewContest};
-
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ContestPayload {
     pub name: String,
     pub slug: String,
@@ -30,6 +30,7 @@ impl ContestPayload {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ContestResponse {
     pub id: i32,
     pub name: String,

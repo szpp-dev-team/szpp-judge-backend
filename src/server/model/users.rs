@@ -7,6 +7,7 @@ use crate::{
 };
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UserPayload {
     pub username: String,
     pub password: String,
@@ -25,6 +26,7 @@ impl UserPayload {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UserResponse {
     pub id: i32,
     pub username: String,

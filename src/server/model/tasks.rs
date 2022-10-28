@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::db::model::task::{NewTask, Task};
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TaskPayload {
     pub name: String,
     pub statement: String,
@@ -41,6 +42,7 @@ impl TaskPayload {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TaskResponse {
     pub id: i32,
     pub name: String,
@@ -84,6 +86,7 @@ impl TaskResponse {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ContestTaskResponse {
     pub id: i32,
     pub name: String,

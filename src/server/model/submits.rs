@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::db::model::submit::{NewSubmit, Submit};
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SubmitPayload {
     pub task_id: i32, // パスパラメータに含める？
     pub contest_id: i32,
@@ -31,6 +32,7 @@ impl SubmitPayload {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SubmitResponse {
     pub id: i32,
     pub status: String,

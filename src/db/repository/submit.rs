@@ -10,6 +10,7 @@ pub trait SubmitRepository {
     fn fetch_submits(&mut self) -> Result<Vec<Submit>>;
     fn fetch_submit_by_id(&mut self, id: i32) -> Result<Submit>;
     fn update_submit(&mut self, new_submit: &Submit) -> Result<Submit>;
+    fn fetch_submit_by_userid(&mut self, userid: i32, contestid: i32) -> Result<Vec<Submit>>;
 }
 
 impl SubmitRepository for PgPooledConn {
@@ -24,6 +25,15 @@ impl SubmitRepository for PgPooledConn {
     fn fetch_submits(&mut self) -> Result<Vec<Submit>> {
         use crate::schema::submits::dsl::*;
         let res = submits.load(self)?;
+        Ok(res)
+    }
+
+    fn fetch_submit_by_userid(&mut self, user_id2: i32, contest_id2: i32) -> Result<Vec<Submit>> {
+        use crate::schema::submits::dsl::*;
+        let res = submits
+            .filter(contest_id.eq(contest_id2))
+            .filter(user_id.eq(user_id2))
+            .load(self)?;
         Ok(res)
     }
 

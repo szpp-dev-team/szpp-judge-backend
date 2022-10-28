@@ -2,12 +2,16 @@ use std::sync::Arc;
 
 use crate::{
     db::{
-        repository::{contest::ContestRepository, task::TaskRepository},
+        repository::{contest::ContestRepository, submit::SubmitRepository, task::TaskRepository},
         PgPool,
     },
-    server::model::{
-        contests::{ContestPayload, ContestResponse},
-        tasks::ContestTaskResponse,
+    server::{
+        middleware::auth::Claims,
+        model::{
+            contests::{ContestPayload, ContestResponse},
+            submits::SubmitResponse,
+            tasks::ContestTaskResponse,
+        },
     },
 };
 use actix_web::{
@@ -66,6 +70,30 @@ pub async fn handle_get_contest_tasks(
         })
         .collect::<Vec<_>>();
     Ok(HttpResponse::Ok().json(contest_tasks))
+}
+
+#[get("/contests/{contest_id}/submits/me")]
+pub async fn handle_get_submit_me(
+    _user: Claims,
+    db_pool: Data<Arc<PgPool>>,
+    contest_id: Path<i32>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
+
+    let submits = conn
+        .fetch_submit_by_userid(_user.id, *contest_id)
+        .map_err(|e| {
+            if let DieselError::NotFound = e.downcast_ref::<DieselError>().unwrap() {
+                ErrorNotFound(e)
+            } else {
+                ErrorInternalServerError(e)
+            }
+        })?;
+    let submits_resp = submits
+        .iter()
+        .map(SubmitResponse::from_model)
+        .collect::<Vec<_>>();
+    Ok(HttpResponse::Ok().json(&submits_resp))
 }
 
 #[put("/contests/{contest_id}")]

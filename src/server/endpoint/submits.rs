@@ -25,9 +25,9 @@ use crate::{
 #[post("/submits")]
 pub async fn handle_submit(
     user: Claims,
-    cloud_storage_client: Data<Client>,
-    db_pool: Data<PgPool>,
-    judge_queue: Data<JudgeQueue>,
+    cloud_storage_client: Data<Arc<Client>>,
+    db_pool: Data<Arc<PgPool>>,
+    judge_queue: Data<Arc<JudgeQueue>>,
     data: Json<SubmitPayload>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_submit = data.to_model(user.id);

@@ -313,6 +313,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmitResponse'
 
+  /contests/{contest_id}/submits/me:
+    get:
+      summary: get user_submit
+      description: 特定のユーザーの提出を取得する。
+      parameters:
+        - name: contest_id
+          in: path
+          description: コンテスト ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubmitResponse'
+        '500':
+          description: '内部エラー'
+
   /contests/{contest_id}/tasks:
     get:
       summary: get contest tasks

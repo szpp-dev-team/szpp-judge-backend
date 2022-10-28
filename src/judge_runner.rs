@@ -3,7 +3,6 @@ use crate::db::{
     PgPool,
 };
 use anyhow::Result;
-use chrono::Local;
 use futures::future::join_all;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
@@ -21,6 +20,7 @@ pub struct JudgeRunner {
     max_thread_num: usize,
     queue: Arc<Mutex<VecDeque<JudgeRequest>>>,
     db_pool: Arc<PgPool>,
+    judge_server_url: String,
 }
 
 #[derive(Serialize)]
@@ -54,6 +54,7 @@ impl JudgeRunner {
         queue: Arc<Mutex<VecDeque<JudgeRequest>>>,
         db_pool: Arc<PgPool>,
         max_thread_num: usize,
+        judge_server_url: String,
     ) -> Self {
         let client = Arc::new(Client::default());
         Self {
@@ -61,6 +62,7 @@ impl JudgeRunner {
             max_thread_num,
             queue,
             db_pool,
+            judge_server_url,
         }
     }
 
@@ -71,6 +73,7 @@ impl JudgeRunner {
             let queue = self.queue.clone();
             let client = self.client.clone();
             let db_pool = self.db_pool.clone();
+            let judge_server_url = self.judge_server_url.clone();
             let handle = tokio::spawn(async move {
                 loop {
                     sleep(Duration::from_secs(1)).await;
@@ -83,20 +86,13 @@ impl JudgeRunner {
                     };
 
                     let resp = client
-                        .post("http://example.com")
+                        .post(&judge_server_url)
                         .json(&judge_request)
                         .send()
                         .await?;
                     let judge_response = resp.json::<JudgeResponse>().await?;
 
                     let mut db_conn = db_pool.get()?;
-                    let mut submit = db_conn.fetch_submit_by_id(judge_request.submit_id)?;
-                    submit.status = judge_response.status;
-                    submit.compile_message = judge_response.compile_message;
-                    submit.execution_memory = Some(judge_response.execution_memory);
-                    submit.execution_time = Some(judge_response.execution_time);
-                    submit.updated_at = Some(Local::now().naive_local());
-                    // TODO: スコア計算
 
                     let res = db_conn.fetch_testcases_by_task_id(judge_request.task_id)?;
                     let mut testcase_testcase_set = HashMap::new();
@@ -107,21 +103,30 @@ impl JudgeRunner {
                     }
                     let testcase_set_id_unique: HashSet<(i32, i32)> =
                         testcase_set_id.into_iter().collect();
-                    let mut collect_cnt: HashMap<i32, i32> = HashMap::new();
-                    let mut problem_cnt: HashMap<i32, i32> = HashMap::new();
+                    let mut collect_cnt_mp: HashMap<i32, i32> = HashMap::new();
+                    let mut problem_cnt_mp: HashMap<i32, i32> = HashMap::new();
 
                     for testcase_result in judge_response.testcase_results {
-                        *problem_cnt.entry(testcase_result.id).or_insert(0) += 1;
+                        *problem_cnt_mp.entry(testcase_result.id).or_insert(0) += 1;
                         if testcase_result.status == "AC" {
-                            *collect_cnt.entry(testcase_result.id).or_insert(0) += 1;
+                            *collect_cnt_mp.entry(testcase_result.id).or_insert(0) += 1;
                         }
                     }
-                    let mut num = 0;
+                    let mut all_score = 0;
                     for (set_id, score) in testcase_set_id_unique {
-                        if problem_cnt.get(&set_id) == collect_cnt.get(&set_id) {
-                            num += score;
+                        if problem_cnt_mp.get(&set_id) == collect_cnt_mp.get(&set_id) {
+                            all_score += score;
                         }
                     }
+
+                    let mut submit = db_conn.fetch_submit_by_id(judge_request.submit_id)?;
+                    submit.update(
+                        &judge_response.status,
+                        judge_response.compile_message,
+                        judge_response.execution_memory,
+                        judge_response.execution_time,
+                        all_score,
+                    );
 
                     db_conn.update_submit(&submit)?;
                 }

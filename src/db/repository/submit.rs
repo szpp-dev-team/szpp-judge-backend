@@ -1,5 +1,8 @@
 use crate::db::{
+    model::contest::Contest,
     model::submit::{NewSubmit, Submit},
+    model::task::Task,
+    model::user::User,
     PgPooledConn,
 };
 use anyhow::Result;
@@ -11,6 +14,10 @@ pub trait SubmitRepository {
     fn fetch_submit_by_id(&mut self, id: i32) -> Result<Submit>;
     fn update_submit(&mut self, new_submit: &Submit) -> Result<Submit>;
     fn fetch_submit_by_userid(&mut self, userid: i32, contestid: i32) -> Result<Vec<Submit>>;
+    fn fetch_submits_by_contest_id(
+        &mut self,
+        contest_id: i32,
+    ) -> Result<Vec<(Submit, Contest, User, Task)>>;
 }
 
 impl SubmitRepository for PgPooledConn {
@@ -56,6 +63,20 @@ impl SubmitRepository for PgPooledConn {
                 updated_at.eq(chrono::Local::now().naive_local()),
             ))
             .get_result(self)?;
+        Ok(res)
+    }
+
+    fn fetch_submits_by_contest_id(
+        &mut self,
+        search_contest_id: i32,
+    ) -> Result<Vec<(Submit, Contest, User, Task)>> {
+        use crate::schema::{contests, submits, submits::dsl::*, tasks, users};
+        let res = submits
+            .filter(submits::contest_id.eq(search_contest_id))
+            .inner_join(contests::table)
+            .inner_join(users::table)
+            .inner_join(tasks::table)
+            .load(self)?;
         Ok(res)
     }
 }

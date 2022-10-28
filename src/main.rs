@@ -67,25 +67,33 @@ async fn main() -> Result<()> {
             .app_data(Data::new(db_pool.clone()))
             .app_data(Data::new(cloud_storage_client.clone()))
             .app_data(Data::new(judge_queue.clone()))
+            /* auth */
             .service(handle_signin)
+            /* contest */
             .service(handle_register_contest)
             .service(handle_get_contest)
             .service(handle_get_contest_tasks)
             .service(handle_get_submit_me)
             .service(handle_update_contest)
+            /* health check */
             .service(handle_check_health)
+            /* ranking */
             .service(handle_get_ranking)
+            /* submit */
             .service(handle_submit)
             .service(handle_get_submits)
             .service(handle_get_submit)
+            /* task */
             .service(handle_register_task)
             .service(handle_update_task)
             .service(handle_get_task)
+            /* testcase */
             .service(handle_register_testcase_set)
             .service(handle_link_testcase_sets)
             .service(handle_get_testcase)
             .service(handle_get_testcases)
             .service(handle_register_testcase)
+            /* user */
             .service(handle_register_user)
             .service(handle_get_user)
     })

@@ -15,6 +15,7 @@ use crate::{
         users::handle_get_user,
     },
 };
+use actix_cors::Cors;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use anyhow::Result;
 use db::new_pg_pool;
@@ -62,7 +63,13 @@ async fn main() -> Result<()> {
     // TODO: route 関数に分ける
     // see: https://github.com/kenkoooo/AtCoderProblems/blob/2d3e64869f23c0510797da34039953ae3d4f018b/atcoder-problems-backend/src/server/services.rs
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allowed_origin("https://szpp-judge-3776.web.app")
+            .allow_any_method()
+            .supports_credentials();
+
         App::new()
+            .wrap(cors)
             .wrap(Logger::default())
             .app_data(Data::new(db_pool.clone()))
             .app_data(Data::new(cloud_storage_client.clone()))

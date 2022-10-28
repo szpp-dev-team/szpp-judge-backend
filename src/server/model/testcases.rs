@@ -7,7 +7,6 @@ use crate::db::model::testcase::{NewTestcase, Testcase};
 #[serde(rename_all = "camelCase")]
 pub struct TestcasePayload {
     pub name: String,
-    pub task_id: i32,
     pub input: String,
     pub output: String,
 }

@@ -34,7 +34,7 @@ pub async fn handle_get_ranking(
     let mut user_info: HashMap<i32, String> = HashMap::new(); // key:user.id, value:user.username
     let mut task_info: HashMap<i32, (i32, i32)> = HashMap::new(); // key:task.id, value:(task.score, contest.penarty)
 
-    let correct_answer = "AC";
+    const COLLECT_ANSWER: &str = "AC";
 
     for (submit, contest, user, task) in all_submit_info {
         user_info.entry(user.id).or_insert(user.username);
@@ -50,19 +50,19 @@ pub async fn handle_get_ranking(
 
             user_submits.0.push(submit.id);
 
-            if submit.status == correct_answer {
+            if submit.status == COLLECT_ANSWER {
                 user_submits.1 = true;
             } else if !user_submits.1 {
                 user_submits.2 += 1;
             }
         } else {
             // new user registration
-            let mut new_user: HashMap<i32, (Vec<i32>, bool, i32)> = HashMap::new();
+            let mut new_user: TaskHashMap = HashMap::new();
             let task_submit_ids = vec![submit.id];
             let mut ac_flag = false;
             let mut penarty_cnt = 0;
 
-            if submit.status == correct_answer {
+            if submit.status == COLLECT_ANSWER {
                 ac_flag = true;
             } else {
                 penarty_cnt += 1;
@@ -117,7 +117,7 @@ pub async fn handle_get_ranking(
     }
 
     let mut vec: Vec<(&i32, &i32)> = user_score_rank.iter().collect();
-    vec.sort_by(|a, b| (-a.1).cmp(&(-b.1)));
+    vec.sort_unstable_by(|a, b| (-a.1).cmp(&(-b.1)));
 
     let mut user_ranking: HashMap<i32, i32> = HashMap::new(); // key:user_id, value = ranking
     let mut ranking = 1;

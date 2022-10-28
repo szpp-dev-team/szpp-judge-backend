@@ -14,7 +14,7 @@ use gcs::Client;
 use server::endpoint::{
     tasks::handle_get_task,
     testcases::{handle_get_testcase, handle_get_testcases},
-    users::handle_register_user,
+    users::handle_register_user, submits::handle_submit,
 };
 use std::{collections::VecDeque, env, sync::Arc};
 use tokio::sync::Mutex;
@@ -69,6 +69,7 @@ async fn main() -> Result<()> {
             .service(handle_get_testcases)
             .service(handle_get_testcase)
             .service(handle_signin)
+            .service(handle_submit)
     })
     .bind((
         "0.0.0.0",

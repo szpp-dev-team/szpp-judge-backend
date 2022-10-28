@@ -13,7 +13,7 @@ use diesel::result::Error as DieselError;
 
 #[post("/users")]
 pub async fn handle_register_user(
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     data: Json<UserPayload>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_user = data.to_model();

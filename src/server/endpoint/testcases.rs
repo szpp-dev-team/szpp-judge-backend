@@ -65,7 +65,7 @@ pub async fn handle_get_testcases(
 
 #[post("/tasks/{task_id}/testcases")]
 pub async fn handle_register_testcase(
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     gcs_client: Data<Client>,
     data: Json<TestcasePayload>,
     task_id: Path<i32>,

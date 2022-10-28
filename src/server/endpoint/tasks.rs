@@ -19,7 +19,7 @@ use diesel::Connection;
 #[post("/tasks")]
 pub async fn handle_register_task(
     user: Claims,
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     data: Json<TaskPayload>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_task = data.to_model(user.id);
@@ -41,7 +41,7 @@ pub async fn handle_register_task(
 #[put("/tasks/{task_id}")]
 pub async fn handle_update_task(
     user: Claims,
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     data: Json<TaskPayload>,
     task_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {

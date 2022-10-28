@@ -6,8 +6,8 @@ use actix_web::{
     web::{Data, Json, Path},
     HttpResponse,
 };
-use diesel::Connection;
 use diesel::result::Error as DieselError;
+use diesel::Connection;
 
 use crate::{
     db::{
@@ -15,7 +15,7 @@ use crate::{
         PgPool,
     },
     gcs::Client,
-    judge_runner::{JudgeQueue, JudgeRequest, self},
+    judge_runner::{self, JudgeQueue, JudgeRequest},
     server::{
         middleware::auth::Claims,
         model::submits::{SubmitPayload, SubmitResponse},
@@ -51,7 +51,10 @@ pub async fn handle_submit(
         .map_err(ErrorInternalServerError)?;
     let judge_testcases = testcases
         .into_iter()
-        .map(|testcase| judge_runner::Testcase{name: testcase.1.name, id: testcase.1.id} )
+        .map(|testcase| judge_runner::Testcase {
+            name: testcase.1.name,
+            id: testcase.1.id,
+        })
         .collect::<Vec<_>>();
     judge_queue.lock().await.push_back(JudgeRequest {
         submit_id: submit.id,
@@ -67,7 +70,7 @@ pub async fn handle_submit(
 #[get("/submits")]
 pub async fn handle_get_submits(
     _user: Claims,
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let mut conn = db_pool
         .get()

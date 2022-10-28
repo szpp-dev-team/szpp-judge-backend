@@ -431,6 +431,12 @@ paths:
           description: 'エラー'
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     SigninPayload:
       type: object

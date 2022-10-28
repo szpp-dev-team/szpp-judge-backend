@@ -23,15 +23,21 @@ pub struct JudgeRunner {
     judge_server_url: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct JudgeRequest {
     pub submit_id: i32,
     pub language_id: String,
     pub task_id: i32,
-    pub testcase_names: Vec<String>,
+    pub testcases: Vec<Testcase>,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Debug)]
+pub struct Testcase {
+    pub id: i32,
+    pub name: String,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct JudgeResponse {
     pub status: String,
     pub execution_time: i32,
@@ -41,7 +47,7 @@ pub struct JudgeResponse {
     pub testcase_results: Vec<TestcaseResult>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct TestcaseResult {
     pub id: i32,
     pub status: String,
@@ -80,7 +86,7 @@ impl JudgeRunner {
                     let judge_request = match queue.lock().await.pop_front() {
                         Some(judge_request) => judge_request,
                         None => {
-                            println!("no judge request found");
+                            // println!("no judge request found");
                             continue;
                         }
                     };
@@ -89,8 +95,9 @@ impl JudgeRunner {
                         .post(&judge_server_url)
                         .json(&judge_request)
                         .send()
-                        .await?;
+                        .await.unwrap();
                     let judge_response = resp.json::<JudgeResponse>().await?;
+                    dbg!(&judge_response);
 
                     let mut db_conn = db_pool.get()?;
 

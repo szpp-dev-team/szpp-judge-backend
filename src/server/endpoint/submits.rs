@@ -15,7 +15,7 @@ use crate::{
         PgPool,
     },
     gcs::Client,
-    judge_runner::{JudgeQueue, JudgeRequest},
+    judge_runner::{JudgeQueue, JudgeRequest, self},
     server::{
         middleware::auth::Claims,
         model::submits::{SubmitPayload, SubmitResponse},
@@ -49,15 +49,15 @@ pub async fn handle_submit(
     let testcases = conn
         .fetch_testcases_by_task_id(submit.task_id)
         .map_err(ErrorInternalServerError)?;
-    let testcase_names = testcases
+    let judge_testcases = testcases
         .into_iter()
-        .map(|testcase| testcase.1.name)
+        .map(|testcase| judge_runner::Testcase{name: testcase.1.name, id: testcase.1.id} )
         .collect::<Vec<_>>();
     judge_queue.lock().await.push_back(JudgeRequest {
         submit_id: submit.id,
         language_id: submit.language_id.clone(),
         task_id: submit.task_id,
-        testcase_names,
+        testcases: judge_testcases,
     });
 
     let submit_resp = SubmitResponse::from_model(&submit);

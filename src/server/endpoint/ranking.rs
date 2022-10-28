@@ -89,7 +89,7 @@ pub async fn handle_get_ranking(
         let mut user_progress: Vec<TaskInfo> = Vec::new();
 
         for(task_id, penarty_tuple) in user_submits.iter(){
-            let each_task = TaskInfo{
+            let mut each_task = TaskInfo{
                 task_id: *task_id,
                 score: task_info.get(&task_id).unwrap().0,
                 duration: task_info.get(&task_id).unwrap().1 * penarty_tuple.2,
@@ -97,16 +97,13 @@ pub async fn handle_get_ranking(
                 submit_ids: penarty_tuple.0.clone(),
             };
 
-            let mut w_score = 0;
-            let mut w_duration = 0;
-
-            if penarty_tuple.1 {
-                w_score = 1;
-                w_duration = 1;
+            if !penarty_tuple.1 {
+                each_task.score = 0;
+                each_task.duration = 0;
             }
 
-            all_score += each_task.score * w_score;
-            all_duration += each_task.duration * w_duration;
+            all_score += each_task.score;
+            all_duration += each_task.duration;
             all_penarty_cnt += each_task.penarty_count;
             user_progress.push(each_task);
         }

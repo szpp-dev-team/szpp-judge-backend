@@ -4,10 +4,7 @@ use crate::{
     db::{repository::task::TaskRepository, PgPool},
     server::{
         middleware::auth::Claims,
-        model::{
-            tasks::{TaskPayload, TaskResponse},
-            users::UserResponse,
-        },
+        model::tasks::{TaskPayload, TaskResponse},
     },
 };
 use actix_web::{

@@ -1,0 +1,30 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    build-essential \
+    libssl-dev \
+    pkg-config \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+WORKDIR /work
+RUN cargo new --bin szpp-judge-backend
+
+WORKDIR /work/szpp-judge-backend
+COPY Cargo.toml Cargo.lock ./
+RUN cargo build --release \
+    && rm src/*.rs \
+    && rm -f target/release/deps/szpp_judge_backend*
+COPY ./src ./src
+
+RUN cargo build --release
+RUN cp ./target/release/szpp-judge-backend /app
+RUN cargo clean
+
+WORKDIR /work
+
+ENTRYPOINT [ "/app" ]

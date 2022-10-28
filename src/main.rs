@@ -64,9 +64,9 @@ async fn main() -> Result<()> {
     // see: https://github.com/kenkoooo/AtCoderProblems/blob/2d3e64869f23c0510797da34039953ae3d4f018b/atcoder-problems-backend/src/server/services.rs
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin("https://szpp-judge-3776.web.app")
+            .allow_any_header()
             .allow_any_method()
-            .supports_credentials();
+            .allow_any_origin();
 
         App::new()
             .wrap(cors)

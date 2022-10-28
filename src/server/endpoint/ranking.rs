@@ -29,7 +29,8 @@ pub async fn handle_get_ranking(
         }
     })?;
 
-    let mut users_task_penarty: HashMap<i32, HashMap<i32, (Vec<i32>, bool, i32)>> = HashMap::new(); // key:user.id value:(key:task.id, value:(Vec<submit.id>,ac_flag,penarty_cnt))
+    type TaskHashMap = HashMap<i32, (Vec<i32>, bool, i32)>;
+    let mut users_task_penarty: HashMap<i32, TaskHashMap> = HashMap::new(); // key:user.id value:(key:task.id, value:(Vec<submit.id>,ac_flag,penarty_cnt))
     let mut user_info: HashMap<i32, String> = HashMap::new(); // key:user.id, value:user.username
     let mut task_info: HashMap<i32, (i32, i32)> = HashMap::new(); // key:task.id, value:(task.score, contest.penarty)
 
@@ -84,8 +85,8 @@ pub async fn handle_get_ranking(
         for (task_id, penarty_tuple) in user_submits.iter() {
             let mut each_task = TaskInfo {
                 task_id: *task_id,
-                score: task_info.get(&task_id).unwrap().0,
-                duration: task_info.get(&task_id).unwrap().1 * penarty_tuple.2,
+                score: task_info.get(task_id).unwrap().0,
+                duration: task_info.get(task_id).unwrap().1 * penarty_tuple.2,
                 penarty_count: penarty_tuple.2,
                 submit_ids: penarty_tuple.0.clone(),
             };
@@ -104,7 +105,7 @@ pub async fn handle_get_ranking(
         let user_rank_info = RankInfo {
             rank: -1,
             user_id: *user_id,
-            username: user_info.get(&user_id).unwrap().to_string(),
+            username: user_info.get(user_id).unwrap().to_string(),
             score: all_score,
             duration: all_duration,
             penarty_count: all_penarty_cnt,
@@ -121,7 +122,7 @@ pub async fn handle_get_ranking(
     let mut user_ranking: HashMap<i32, i32> = HashMap::new(); // key:user_id, value = ranking
     let mut ranking = 1;
 
-    for (user_id, score) in vec {
+    for (user_id, _score) in vec {
         user_ranking.entry(*user_id).or_insert(ranking);
         ranking += 1;
     }

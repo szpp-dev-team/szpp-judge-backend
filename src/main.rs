@@ -39,7 +39,12 @@ async fn main() -> Result<()> {
     let db_pool = Arc::new(new_pg_pool(env::var("DATABASE_URL")?.as_str())?);
     let cloud_storage_client = Arc::new(Client::new());
     let judge_queue = Arc::new(Mutex::new(VecDeque::with_capacity(QUEUE_CAPACITY)));
-    let judge_runner = JudgeRunner::new(judge_queue.clone(), db_pool.clone(), JUDGE_THREAD_NUM);
+    let judge_runner = JudgeRunner::new(
+        judge_queue.clone(),
+        db_pool.clone(),
+        JUDGE_THREAD_NUM,
+        env::var("JUDGE_SERVER_URL")?,
+    );
     tokio::spawn(async move {
         judge_runner.run().await?;
         Ok::<(), anyhow::Error>(())

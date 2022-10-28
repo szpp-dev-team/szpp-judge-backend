@@ -21,6 +21,7 @@ pub struct JudgeRunner {
     max_thread_num: usize,
     queue: Arc<Mutex<VecDeque<JudgeRequest>>>,
     db_pool: Arc<PgPool>,
+    judge_server_url: String,
 }
 
 #[derive(Serialize)]
@@ -54,6 +55,7 @@ impl JudgeRunner {
         queue: Arc<Mutex<VecDeque<JudgeRequest>>>,
         db_pool: Arc<PgPool>,
         max_thread_num: usize,
+        judge_server_url: String,
     ) -> Self {
         let client = Arc::new(Client::default());
         Self {
@@ -61,6 +63,7 @@ impl JudgeRunner {
             max_thread_num,
             queue,
             db_pool,
+            judge_server_url,
         }
     }
 
@@ -71,6 +74,7 @@ impl JudgeRunner {
             let queue = self.queue.clone();
             let client = self.client.clone();
             let db_pool = self.db_pool.clone();
+            let judge_server_url = self.judge_server_url.clone();
             let handle = tokio::spawn(async move {
                 loop {
                     sleep(Duration::from_secs(1)).await;
@@ -83,7 +87,7 @@ impl JudgeRunner {
                     };
 
                     let resp = client
-                        .post("http://example.com")
+                        .post(&judge_server_url)
                         .json(&judge_request)
                         .send()
                         .await?;

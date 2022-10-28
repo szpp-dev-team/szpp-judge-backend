@@ -1,9 +1,18 @@
 use crate::{
     judge_runner::JudgeRunner,
     server::endpoint::{
-        auth::handle_signin, contests::handle_get_contest, health_check::handle_check_health,
-        tasks::handle_register_task, testcase_sets::handle_register_testcase_set,
-        testcases::handle_register_testcase, users::handle_get_user,
+        auth::handle_signin,
+        contests::{
+            handle_get_contest, handle_get_contest_tasks, handle_get_submit_me,
+            handle_register_contest, handle_update_contest,
+        },
+        health_check::handle_check_health,
+        ranking::handle_get_ranking,
+        submits::{handle_get_submit, handle_get_submits, handle_submit},
+        tasks::{handle_register_task, handle_update_task},
+        testcase_sets::{handle_link_testcase_sets, handle_register_testcase_set},
+        testcases::handle_register_testcase,
+        users::handle_get_user,
     },
 };
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
@@ -14,7 +23,7 @@ use gcs::Client;
 use server::endpoint::{
     tasks::handle_get_task,
     testcases::{handle_get_testcase, handle_get_testcases},
-    users::handle_register_user, submits::handle_submit,
+    users::handle_register_user,
 };
 use std::{collections::VecDeque, env, sync::Arc};
 use tokio::sync::Mutex;
@@ -58,18 +67,27 @@ async fn main() -> Result<()> {
             .app_data(Data::new(db_pool.clone()))
             .app_data(Data::new(cloud_storage_client.clone()))
             .app_data(Data::new(judge_queue.clone()))
+            .service(handle_signin)
+            .service(handle_register_contest)
+            .service(handle_get_contest)
+            .service(handle_get_contest_tasks)
+            .service(handle_get_submit_me)
+            .service(handle_update_contest)
+            .service(handle_check_health)
+            .service(handle_get_ranking)
+            .service(handle_submit)
+            .service(handle_get_submits)
+            .service(handle_get_submit)
+            .service(handle_register_task)
+            .service(handle_update_task)
+            .service(handle_get_task)
+            .service(handle_register_testcase_set)
+            .service(handle_link_testcase_sets)
+            .service(handle_get_testcase)
+            .service(handle_get_testcases)
+            .service(handle_register_testcase)
             .service(handle_register_user)
             .service(handle_get_user)
-            .service(handle_check_health)
-            .service(handle_get_contest)
-            .service(handle_register_testcase)
-            .service(handle_register_testcase_set)
-            .service(handle_register_task)
-            .service(handle_get_task)
-            .service(handle_get_testcases)
-            .service(handle_get_testcase)
-            .service(handle_signin)
-            .service(handle_submit)
     })
     .bind((
         "0.0.0.0",

@@ -1,15 +1,19 @@
 use crate::db::{
     model::submit::{NewSubmit, Submit},
+    model::contest::Contest,
+    model::user::User,
+    model::task::Task,
     PgPooledConn,
 };
 use anyhow::Result;
-use diesel::{insert_into, prelude::*, update};
+use diesel::{insert_into, prelude::*, update, associations::HasTable};
 
 pub trait SubmitRepository {
     fn insert_submit(&mut self, new_submit: &NewSubmit) -> Result<Submit>;
     fn fetch_submits(&mut self) -> Result<Vec<Submit>>;
     fn fetch_submit_by_id(&mut self, id: i32) -> Result<Submit>;
     fn update_submit(&mut self, new_submit: &Submit) -> Result<Submit>;
+    fn fetch_submits_by_contest_id(&mut self, contest_id: i32) -> Result<Vec<(Submit, Contest, User, Task)>> ;
 }
 
 impl SubmitRepository for PgPooledConn {
@@ -48,4 +52,17 @@ impl SubmitRepository for PgPooledConn {
             .get_result(self)?;
         Ok(res)
     }
+
+    fn fetch_submits_by_contest_id(&mut self, search_contest_id: i32) -> Result<Vec<(Submit, Contest, User, Task)>> {
+        use crate::schema::{
+            submits,
+            submits::dsl::*,
+            contests,
+            users,
+            tasks
+        };
+        let res = submits.filter(submits::contest_id.eq(search_contest_id)).inner_join(contests::table).inner_join(users::table).inner_join(tasks::table).load(self)?;
+        Ok(res)
+    }
+
 }

@@ -1,10 +1,17 @@
-use crate::db::{repository::submit::SubmitRepository, PgPool};
+use crate::db::{
+    repository::{submit::SubmitRepository, testcase::TestcaseRepository},
+    PgPool,
+};
 use anyhow::Result;
 use chrono::Local;
 use futures::future::join_all;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use std::{collections::VecDeque, sync::Arc, time::Duration};
+use std::{
+    collections::{HashMap, HashSet, VecDeque},
+    sync::Arc,
+    time::Duration,
+};
 use tokio::{sync::Mutex, time::sleep};
 
 pub type JudgeQueue = Mutex<VecDeque<JudgeRequest>>;
@@ -20,6 +27,7 @@ pub struct JudgeRunner {
 pub struct JudgeRequest {
     pub submit_id: i32,
     pub language_id: String,
+    pub task_id: i32,
     pub testcase_names: Vec<String>,
 }
 
@@ -35,7 +43,7 @@ pub struct JudgeResponse {
 
 #[derive(Deserialize)]
 pub struct TestcaseResult {
-    pub id: u64,
+    pub id: i32,
     pub status: String,
     pub execution_time: i32,
     pub execution_memory: i32,
@@ -89,6 +97,31 @@ impl JudgeRunner {
                     submit.execution_time = Some(judge_response.execution_time);
                     submit.updated_at = Some(Local::now().naive_local());
                     // TODO: スコア計算
+
+                    let res = db_conn.fetch_testcases_by_task_id(judge_request.task_id)?;
+                    let mut testcase_testcase_set = HashMap::new();
+                    let mut testcase_set_id: Vec<(i32, i32)> = Vec::new();
+                    for (tts, _, ts) in &res {
+                        testcase_testcase_set.insert(tts.testcase_id, tts.testcase_set_id);
+                        testcase_set_id.push((tts.testcase_set_id, ts.score));
+                    }
+                    let testcase_set_id_unique: HashSet<(i32, i32)> =
+                        testcase_set_id.into_iter().collect();
+                    let mut collect_cnt: HashMap<i32, i32> = HashMap::new();
+                    let mut problem_cnt: HashMap<i32, i32> = HashMap::new();
+
+                    for testcase_result in judge_response.testcase_results {
+                        *problem_cnt.entry(testcase_result.id).or_insert(0) += 1;
+                        if testcase_result.status == "AC" {
+                            *collect_cnt.entry(testcase_result.id).or_insert(0) += 1;
+                        }
+                    }
+                    let mut num = 0;
+                    for (set_id, score) in testcase_set_id_unique {
+                        if problem_cnt.get(&set_id) == collect_cnt.get(&set_id) {
+                            num += score;
+                        }
+                    }
 
                     db_conn.update_submit(&submit)?;
                 }

@@ -56,6 +56,7 @@ pub async fn handle_submit(
     judge_queue.lock().await.push_back(JudgeRequest {
         submit_id: submit.id,
         language_id: submit.language_id.clone(),
+        task_id: submit.task_id,
         testcase_names,
     });
 

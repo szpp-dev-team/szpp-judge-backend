@@ -68,6 +68,22 @@ impl JudgeRunner {
 
     pub async fn run(&self) -> Result<()> {
         let mut handles = Vec::with_capacity(self.max_thread_num);
+        let mut db_conn = self.db_pool.get()?;
+        let res = db_conn.fetch_submits_wj()?;
+        for submit_wj in res {
+            let testcases = db_conn.fetch_testcases_by_task_id(submit_wj.task_id)?;
+            let mut testcases_name: Vec<String> = Vec::new();
+            for testcase in testcases {
+                testcases_name.push(testcase.1.name);
+            }
+            let j = JudgeRequest {
+                submit_id: submit_wj.id,
+                language_id: submit_wj.language_id,
+                task_id: submit_wj.task_id,
+                testcase_names: testcases_name,
+            };
+            self.queue.lock().await.push_back(j);
+        }
 
         for _ in 0..self.max_thread_num {
             let queue = self.queue.clone();

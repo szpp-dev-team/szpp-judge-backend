@@ -44,7 +44,7 @@ pub struct JudgeResponse {
     pub execution_memory: i32,
     pub compile_message: Option<String>,
     pub error_message: Option<String>,
-    pub testcase_results: Vec<TestcaseResult>,
+    pub testcase_results: Option<Vec<TestcaseResult>>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -110,23 +110,28 @@ impl JudgeRunner {
                         entry.1.push(testcase.id);
                     }
 
-                    // testcase_id が AC かどうかの HashSet を作る
-                    let mut task_ac_set = HashSet::new();
-                    for testcase_result in judge_response.testcase_results {
-                        if testcase_result.status == "AC" {
-                            task_ac_set.insert(testcase_result.id);
+                    let mut all_score = None;
+                    if let Some(testcase_results) = judge_response.testcase_results {
+                        // testcase_id が AC かどうかの HashSet を作る
+                        let mut task_ac_set = HashSet::new();
+                        for testcase_result in testcase_results {
+                            if testcase_result.status == "AC" {
+                                task_ac_set.insert(testcase_result.id);
+                            }
                         }
-                    }
 
-                    // testcase_set に属する testcase 全てが AC だったら score を all_score に加算
-                    let mut all_score = 0;
-                    for (_set_id, (score, testcase_ids)) in testcase_set_mp {
-                        if testcase_ids
-                            .iter()
-                            .all(|testcase_id| task_ac_set.contains(testcase_id))
-                        {
-                            all_score += score;
+                        // testcase_set に属する testcase 全てが AC だったら score を all_score に加算
+                        let mut all_score2 = 0;
+                        for (_set_id, (score, testcase_ids)) in testcase_set_mp {
+                            if testcase_ids
+                                .iter()
+                                .all(|testcase_id| task_ac_set.contains(testcase_id))
+                            {
+                                all_score2 += score;
+                            }
                         }
+
+                        all_score = Some(all_score2);
                     }
 
                     let mut submit = db_conn.fetch_submit_by_id(judge_request.submit_id)?;

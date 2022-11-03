@@ -51,9 +51,9 @@ pub async fn handle_get_testcases(
     let list = conn
         .fetch_testcases_by_task_id(*task_id)
         .map_err(ErrorInternalServerError)?;
-    let mut mp = HashMap::new();
+    let mut mp: HashMap<_, Vec<_>> = HashMap::new();
     for (_, testcase, testcase_set) in list {
-        mp.entry(testcase).or_insert(Vec::new()).push(testcase_set);
+        mp.entry(testcase).or_default().push(testcase_set);
     }
 
     let testcases_resp = mp

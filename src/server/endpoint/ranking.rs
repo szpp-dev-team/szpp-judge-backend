@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use crate::{
     db::{repository::submit::SubmitRepository, PgPool},
@@ -18,7 +18,7 @@ use actix_web::{
 #[get("/contests/{contest_id}/ranking")]
 pub async fn handle_get_ranking(
     path: Path<i32>,
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let mut conn = db_pool.get().map_err(ErrorInternalServerError)?;
     let all_submit_info = conn.fetch_submits_by_contest_id(*path).map_err(|e| {

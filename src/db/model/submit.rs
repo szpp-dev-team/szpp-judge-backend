@@ -28,13 +28,13 @@ impl Submit {
         compile_message: Option<String>,
         execution_memory: i32,
         execution_time: i32,
-        score: i32,
+        score: Option<i32>,
     ) {
         self.status = status.to_string();
         self.compile_message = compile_message;
         self.execution_memory = Some(execution_memory);
         self.execution_time = Some(execution_time);
-        self.score = Some(score);
+        self.score = score;
         self.updated_at = Some(Local::now().naive_local());
     }
 }

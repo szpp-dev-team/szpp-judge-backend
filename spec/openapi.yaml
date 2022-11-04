@@ -3,6 +3,18 @@ info:
   title: szpp-judge
   version: 1.0.0
 
+servers:
+  - url: http://35.221.67.128:8080
+    description: production envilonment
+
+  - url: http://{host}:{port}
+    description: local development environment
+    variables:
+      host:
+        default: localhost
+      port:
+        default: '8080'
+
 paths:
   /auth/signin:
     post:
@@ -431,6 +443,12 @@ paths:
           description: 'エラー'
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     SigninPayload:
       type: object

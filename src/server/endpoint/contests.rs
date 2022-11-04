@@ -25,7 +25,7 @@ use diesel::Connection;
 
 #[post("/contests")]
 pub async fn handle_register_contest(
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     data: Json<ContestPayload>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let new_contest = data.to_model();
@@ -57,7 +57,7 @@ pub async fn handle_get_contest(
 #[get("/contests/{contest_id}/tasks")]
 pub async fn handle_get_contest_tasks(
     contest_id: Path<i32>,
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let mut db_conn = db_pool.get().map_err(ErrorInternalServerError)?;
     let db_contest_tasks = db_conn
@@ -98,7 +98,7 @@ pub async fn handle_get_submit_me(
 
 #[put("/contests/{contest_id}")]
 pub async fn handle_update_contest(
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     data: Json<ContestPayload>,
     contest_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {

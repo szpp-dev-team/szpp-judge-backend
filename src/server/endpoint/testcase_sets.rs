@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::{
     db::{repository::testcase_set::TestcaseSetRepository, PgPool},
     server::model::testcase_sets::{TestcaseSetPayload, TestcaseSetResponse},
@@ -12,7 +14,7 @@ use diesel::Connection;
 
 #[post("/tasks/{task_id}/testcase_sets")]
 pub async fn handle_register_testcase_set(
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     data: Json<TestcaseSetPayload>,
     task_id: Path<i32>,
 ) -> Result<HttpResponse, actix_web::Error> {
@@ -32,7 +34,7 @@ pub async fn handle_register_testcase_set(
 
 #[post("/tasks/{task_id}/testcase_sets/{testcase_set_id}")]
 pub async fn handle_link_testcase_sets(
-    db_pool: Data<PgPool>,
+    db_pool: Data<Arc<PgPool>>,
     data: Json<Vec<i32>>,
     path: Path<(i32, i32)>,
 ) -> Result<HttpResponse, actix_web::Error> {

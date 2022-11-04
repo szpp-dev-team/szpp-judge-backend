@@ -1,11 +1,21 @@
 use crate::{
     judge_runner::JudgeRunner,
     server::endpoint::{
-        auth::handle_signin, contests::handle_get_contest, health_check::handle_check_health,
-        tasks::handle_register_task, testcase_sets::handle_register_testcase_set,
-        testcases::handle_register_testcase, users::handle_get_user,
+        auth::handle_signin,
+        contests::{
+            handle_get_contest, handle_get_contest_tasks, handle_get_submit_me,
+            handle_register_contest, handle_update_contest,
+        },
+        health_check::handle_check_health,
+        ranking::handle_get_ranking,
+        submits::{handle_get_submit, handle_get_submits, handle_submit},
+        tasks::{handle_register_task, handle_update_task},
+        testcase_sets::{handle_link_testcase_sets, handle_register_testcase_set},
+        testcases::handle_register_testcase,
+        users::handle_get_user,
     },
 };
+use actix_cors::Cors;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use anyhow::Result;
 use db::new_pg_pool;
@@ -53,22 +63,46 @@ async fn main() -> Result<()> {
     // TODO: route 関数に分ける
     // see: https://github.com/kenkoooo/AtCoderProblems/blob/2d3e64869f23c0510797da34039953ae3d4f018b/atcoder-problems-backend/src/server/services.rs
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allow_any_header()
+            .allow_any_method()
+            .allow_any_origin();
+
         App::new()
+            .wrap(cors)
             .wrap(Logger::default())
             .app_data(Data::new(db_pool.clone()))
             .app_data(Data::new(cloud_storage_client.clone()))
             .app_data(Data::new(judge_queue.clone()))
+            /* auth */
+            .service(handle_signin)
+            /* contest */
+            .service(handle_register_contest)
+            .service(handle_get_contest)
+            .service(handle_get_contest_tasks)
+            .service(handle_get_submit_me)
+            .service(handle_update_contest)
+            /* health check */
+            .service(handle_check_health)
+            /* ranking */
+            .service(handle_get_ranking)
+            /* submit */
+            .service(handle_submit)
+            .service(handle_get_submits)
+            .service(handle_get_submit)
+            /* task */
+            .service(handle_register_task)
+            .service(handle_update_task)
+            .service(handle_get_task)
+            /* testcase */
+            .service(handle_register_testcase_set)
+            .service(handle_link_testcase_sets)
+            .service(handle_get_testcase)
+            .service(handle_get_testcases)
+            .service(handle_register_testcase)
+            /* user */
             .service(handle_register_user)
             .service(handle_get_user)
-            .service(handle_check_health)
-            .service(handle_get_contest)
-            .service(handle_register_testcase)
-            .service(handle_register_testcase_set)
-            .service(handle_register_task)
-            .service(handle_get_task)
-            .service(handle_get_testcases)
-            .service(handle_get_testcase)
-            .service(handle_signin)
     })
     .bind((
         "0.0.0.0",

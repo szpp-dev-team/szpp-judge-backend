@@ -14,5 +14,10 @@ RUN cargo build --release
 
 FROM ubuntu:22.04
 
+WORKDIR /szpp-judge
+
+RUN apt-get update && apt-get install -y libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /work/szpp-judge-backend/target/release/szpp-judge-backend .
-ENTRYPOINT [ "/szpp-judge-backend" ]
+ENTRYPOINT [ "/szpp-judge/szpp-judge-backend" ]

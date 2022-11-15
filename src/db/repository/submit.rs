@@ -15,7 +15,7 @@ use diesel::{insert_into, prelude::*, update};
 pub trait SubmitRepository {
     fn insert_submit(&mut self, new_submit: &NewSubmit) -> Result<Submit>;
     fn fetch_submits(&mut self) -> Result<Vec<Submit>>;
-    fn fetch_submits_wj(&mut self) -> Result<Vec<Submit>>;
+    fn fetch_submits_status(&mut self, status: &str) -> Result<Vec<Submit>>;
     fn fetch_submit_by_id(&mut self, id: i32) -> Result<Submit>;
     fn update_submit(&mut self, new_submit: &Submit) -> Result<Submit>;
     fn fetch_submit_by_userid(&mut self, userid: i32, contestid: i32) -> Result<Vec<Submit>>;
@@ -40,9 +40,9 @@ impl SubmitRepository for PgPooledConn {
         Ok(res)
     }
 
-    fn fetch_submits_wj(&mut self) -> Result<Vec<Submit>> {
+    fn fetch_submits_status(&mut self, status2: &str) -> Result<Vec<Submit>> {
         use crate::schema::submits::dsl::*;
-        let res = submits.filter(status.eq("WJ")).load(self)?;
+        let res = submits.filter(status.eq(status2)).load(self)?;
         Ok(res)
     }
 
